@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { askAzureText, askAzureWithImage } from "../Utils/azureOpenAi";
 
 const Mentor = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [mode, setMode] = useState("text");
   const [isLoading, setIsLoading] = useState(false);
-  const recognitionRef = useRef(null);
   const [isListening, setIsListening] = useState(false);
+
+  const recognitionRef = useRef(null);
   const videoRef = useRef(null);
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
+  // Initialize webcam
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
       .then((stream) => {
@@ -19,11 +19,10 @@ const Mentor = () => {
           videoRef.current.srcObject = stream;
         }
       })
-      .catch((err) => {
-        console.error("Camera access error:", err);
-      });
+      .catch((err) => console.error("Camera access error:", err));
   }, []);
 
+  // Send question to Azure with optional image
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -33,47 +32,39 @@ const Mentor = () => {
     setIsLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-      const systemPrompt =
-        "You are an AI interview coach helping users practice and improve their responses. Be constructive and friendly.";
-      const fullInput = systemPrompt + "\nUser: " + input;
-
-      const result = await model.generateContent(fullInput);
-      const response = await result.response;
-      const reply = response.text() || "Sorry, I didn't get that.";
-
+      const systemPrompt = "You are an AI interview coach.";
+      const reply = await askAzureText(`${systemPrompt}\nUser: ${input}`);
       setMessages((prev) => [...prev, { type: "ai", text: reply }]);
 
-      // Posture Analysis
       const img = captureImage();
       if (img) {
-        const postureFeedback = await sendToGeminiWithImage(img);
+        const imageFeedback = await askAzureWithImage(
+          "Analyze this candidate's posture and gestures in a mock interview. Be constructive.",
+          img
+        );
         setMessages((prev) => [
           ...prev,
-          { type: "ai", text: `📸 Posture Feedback:\n${postureFeedback}` },
+          { type: "ai", text: `📸 Posture Feedback:\n${imageFeedback}` }
         ]);
       }
-    } catch (error) {
-      console.error("Gemini API Error:", error);
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { type: "ai", text: "Error contacting Gemini API." },
+        { type: "ai", text: "❌ Azure error: " + err.message }
       ]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Voice-to-text handler
   const handleVoiceInput = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in your browser. Try using Google Chrome for Best Experience ");
+      alert("Speech recognition is not supported in your browser.");
       return;
     }
 
-    // If already listening, don't restart
     if (isListening) return;
 
     const recognition = new SpeechRecognition();
@@ -82,33 +73,29 @@ const Mentor = () => {
     recognition.lang = "en-US";
 
     recognition.onstart = () => {
-      console.log("🎤 Voice recognition started");
+      console.log("🎤 Listening...");
       setIsListening(true);
       recognitionRef.current = recognition;
     };
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      console.log("📝 Transcript:", transcript);
       setInput(transcript);
-
       setTimeout(() => {
         handleSend();
       }, 100);
     };
 
     recognition.onerror = (event) => {
-      if (event.error === "aborted") {
-        console.log("🛑 Recognition aborted");
-        return;
+      if (event.error !== "aborted") {
+        console.error("Voice error:", event.error);
+        alert("Voice error: " + event.error);
       }
-      console.error("⚠️ Voice recognition error:", event.error);
-      alert("Voice error: " + event.error);
       setIsListening(false);
     };
 
     recognition.onend = () => {
-      console.log("🎤 Voice recognition ended");
+      console.log("🎤 Stopped");
       setIsListening(false);
       recognitionRef.current = null;
     };
@@ -118,55 +105,34 @@ const Mentor = () => {
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      recognitionRef.current.abort(); // This triggers onend
+      recognitionRef.current.abort();
     }
   };
 
-  // VIDEO PART
+  // Webcam snapshot
   const captureImage = () => {
-  const canvas = document.createElement("canvas");
-  const video = videoRef.current;
+    const canvas = document.createElement("canvas");
+    const video = videoRef.current;
 
-  if (!video) return null;
+    if (!video) return null;
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg"); // base64 image
-};
- const sendToGeminiWithImage = async (imageBase64) => {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-    const prompt = "Give feedback on posture and hand gestures for a mock interview. Be constructive and helpful.";
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const imagePart = {
-      inlineData: {
-        data: imageBase64.split(",")[1],
-        mimeType: "image/jpeg",
-      },
-    };
-
-    const result = await model.generateContent([
-      { role: "user", parts: [{ text: prompt }, imagePart] },
-    ]);
-
-    const response = await result.response;
-    return response.text();
+    return canvas.toDataURL("image/jpeg");
   };
 
-
-
-
   return (
-     <div className="relative w-full min-h-screen overflow-hidden text-white font-sans">
+    <div className="relative w-full min-h-screen overflow-hidden text-white font-sans">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-lg p-6 flex flex-col">
         <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-6 tracking-wide font-mono">
           🚀 Interview Arena
         </h1>
 
-        {/* Camera Feed */}
+        {/* Webcam */}
         <div className="flex justify-center mb-6">
           <video
             ref={videoRef}
@@ -183,21 +149,24 @@ const Mentor = () => {
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`px-6 py-2 rounded-full transition font-semibold ${mode === m ? "bg-fuchsia-700" : "bg-gray-800 hover:bg-fuchsia-800"}`}
+              className={`px-6 py-2 rounded-full transition font-semibold ${
+                mode === m ? "bg-fuchsia-700" : "bg-gray-800 hover:bg-fuchsia-800"
+              }`}
             >
               {m === "text" ? "Text Mode" : "Voice Mode"}
             </button>
           ))}
         </div>
 
-        {/* Chat Box */}
+        {/* Chat Messages */}
         <div className="flex-1 bg-[#1a1a2c]/70 rounded-xl p-4 overflow-y-auto space-y-4 border border-purple-900">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`max-w-xl p-3 rounded-lg ${msg.type === "user"
-                ? "ml-auto bg-fuchsia-600 text-right"
-                : "mr-auto bg-slate-800 text-left"
+              className={`max-w-xl p-3 rounded-lg ${
+                msg.type === "user"
+                  ? "ml-auto bg-fuchsia-600 text-right"
+                  : "mr-auto bg-slate-800 text-left"
               }`}
             >
               {msg.text}
@@ -208,7 +177,7 @@ const Mentor = () => {
           )}
         </div>
 
-        {/* Input Section */}
+        {/* Input */}
         {mode === "text" && (
           <div className="mt-6 flex gap-2">
             <input
@@ -228,6 +197,7 @@ const Mentor = () => {
           </div>
         )}
 
+        {/* Voice Input */}
         {mode === "voice" && (
           <div className="mt-6 flex flex-col items-center gap-3 text-center text-gray-300">
             <button

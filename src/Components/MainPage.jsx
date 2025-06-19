@@ -1,8 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../Utils/Firebase";
 import Squares from "./Squares.jsx";
-
 const MainPage = () => {
+  const navigate = useNavigate();
+
+  const handleStartMockInterview = () => {
+    if (auth.currentUser) {
+      navigate("/mentor");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <div className="relative w-screen h-screen bg-black text-white overflow-hidden">
       {/* 🔳 Animated background */}
@@ -13,7 +24,6 @@ const MainPage = () => {
         squareSize={40}
         hoverFillColor="#333"
       />
-      
 
       {/* 💬 Centered Text Content */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
@@ -39,6 +49,16 @@ const MainPage = () => {
         >
           Your AI-powered mock interview partner.
         </motion.p>
+
+        {/* 🚀 Start Mock Interview Button */}
+        <motion.button
+          className="mt-8 px-8 py-4 rounded-lg bg-fuchsia-700 hover:bg-fuchsia-800 text-xl font-bold transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handleStartMockInterview}
+        >
+          Start Mock Interview
+        </motion.button>
       </div>
     </div>
   );

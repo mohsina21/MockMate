@@ -1,8 +1,11 @@
-import Squares from "./Components/Squares.jsx"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Squares from "./Components/Squares.jsx";
 import MainPage from "./Components/MainPage.jsx";
 import AboutSection from "./Components/AboutSection.jsx";
 import "./index.css";
 import Mentor from "./Components/Mentor.jsx";
+import Auth from "./Components/Auth.jsx";
+import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 
 function App() {
   return (
@@ -17,11 +20,29 @@ function App() {
           hoverFillColor="#222222"
         />
       </div>
-
-      {/* Page content */}
-      <MainPage />
-      <AboutSection />
-      <Mentor />
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Auth />
+                <MainPage />
+                <AboutSection />
+              </>
+            }
+          />
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/mentor"
+            element={
+              <ProtectedRoute>
+                <Mentor />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
       {/* Footer or additional sections can be added here */}
     </div>
   );

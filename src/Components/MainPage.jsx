@@ -1,8 +1,20 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import Button from "./button";
+import Card from "./card";
+import {
+  ArrowRight,
+  Users,
+  Brain,
+  Trophy,
+  Star,
+  Zap,
+  Shield,
+  Award,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../Utils/Firebase";
 import Squares from "./Squares.jsx";
+
 const MainPage = () => {
   const navigate = useNavigate();
 

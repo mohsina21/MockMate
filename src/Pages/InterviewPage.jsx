@@ -1,24 +1,22 @@
-"use client"
+import { useState, useRef, useEffect } from "react";
+import { Button } from "./button";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import { Textarea } from "./textarea"
+import { Badge } from "./badge";
+import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target } from "lucide-react";
+import { Link } from "react-router-dom";
 
-import { useState, useRef, useEffect } from "react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Textarea } from "../components/ui/textarea"
-import { Badge } from "../components/ui/badge"
-import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target } from "lucide-react"
-import { Link } from "react-router-dom"
-
-export default function InterviewPage() {
-  const [isStarted, setIsStarted] = useState(false)
-  const [isRecording, setIsRecording] = useState(false)
-  const [messages, setMessages] = useState([])
-  const [currentInput, setCurrentInput] = useState("")
-  const [selectedRole, setSelectedRole] = useState("")
-  const [selectedLevel, setSelectedLevel] = useState("")
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [isComplete, setIsComplete] = useState(false)
-  const messagesEndRef = useRef(null)
+export default function Mentor() {
+  const [isStarted, setIsStarted] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("");
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const interviewQuestions = [
     "Tell me about yourself and your background.",
@@ -27,53 +25,53 @@ export default function InterviewPage() {
     "Describe a challenging situation you faced and how you handled it.",
     "Where do you see yourself in 5 years?",
     "Do you have any questions for me?",
-  ]
+  ];
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const startInterview = () => {
-    if (!selectedRole || !selectedLevel) return
+    if (!selectedRole || !selectedLevel) return;
 
-    setIsStarted(true)
+    setIsStarted(true);
     const welcomeMessage = {
       id: Date.now().toString(),
       type: "bot",
       content: `Hello! I'm your AI interviewer. Today we'll be conducting a ${selectedLevel} level interview for a ${selectedRole} position. I'll ask you ${interviewQuestions.length} questions. Take your time with each response. Let's begin with the first question: ${interviewQuestions[0]}`,
       timestamp: new Date(),
-    }
-    setMessages([welcomeMessage])
-  }
+    };
+    setMessages([welcomeMessage]);
+  };
 
   const sendMessage = () => {
-    if (!currentInput.trim()) return
+    if (!currentInput.trim()) return;
 
     const userMessage = {
       id: Date.now().toString(),
       type: "user",
       content: currentInput,
       timestamp: new Date(),
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setCurrentInput("")
+    setMessages((prev) => [...prev, userMessage]);
+    setCurrentInput("");
 
     // Simulate AI response
     setTimeout(() => {
-      let botResponse = ""
+      let botResponse = "";
 
       if (currentQuestion < interviewQuestions.length - 1) {
-        botResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`
-        setCurrentQuestion((prev) => prev + 1)
+        botResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
+        setCurrentQuestion((prev) => prev + 1);
       } else {
         botResponse =
-          "Thank you for completing the interview! That concludes our session. You'll receive detailed feedback shortly."
-        setIsComplete(true)
+          "Thank you for completing the interview! That concludes our session. You'll receive detailed feedback shortly.";
+        setIsComplete(true);
       }
 
       const botMessage = {
@@ -81,19 +79,19 @@ export default function InterviewPage() {
         type: "bot",
         content: botResponse,
         timestamp: new Date(),
-      }
+      };
 
-      setMessages((prev) => [...prev, botMessage])
-    }, 1500)
-  }
+      setMessages((prev) => [...prev, botMessage]);
+    }, 1500);
+  };
 
   const resetInterview = () => {
-    setIsStarted(false)
-    setMessages([])
-    setCurrentQuestion(0)
-    setIsComplete(false)
-    setCurrentInput("")
-  }
+    setIsStarted(false);
+    setMessages([]);
+    setCurrentQuestion(0);
+    setIsComplete(false);
+    setCurrentInput("");
+  };
 
   if (!isStarted) {
     return (
@@ -203,7 +201,7 @@ export default function InterviewPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -277,8 +275,8 @@ export default function InterviewPage() {
                       className="flex-1 min-h-[60px] border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 bg-white"
                       onKeyPress={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault()
-                          sendMessage()
+                          e.preventDefault();
+                          sendMessage();
                         }
                       }}
                     />
@@ -402,5 +400,5 @@ export default function InterviewPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

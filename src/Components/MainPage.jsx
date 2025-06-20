@@ -2,19 +2,20 @@ import { Button } from "./button";
 import { Card, CardContent } from "./card"
 import { ArrowRight, Users, Brain, Trophy, Star, Zap, Shield, Award } from "lucide-react";
 import { Link } from "react-router-dom";
+import Button1 from "./UI/Buttons1";
 
 export default function MainPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm ">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-teal-700 bg-clip-text text-transparent">
-              InterviewAI
+              MockMate
             </span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
@@ -58,13 +59,16 @@ export default function MainPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/interview">
-              <Button
+              {/* <Button
                 size="lg"
                 className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Start Free Interview
                 <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              </Button> */}
+              <Button1 >
+                 Start Free Interview
+              </Button1>
             </Link>
             <Button
               size="lg"
@@ -106,7 +110,7 @@ export default function MainPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-purple-200">
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-8 mt-5 text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
@@ -117,7 +121,7 @@ export default function MainPage() {
               </CardContent>
             </Card>
             <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-teal-200">
-              <CardContent className="p-8 text-center">
+              <CardContent className="mt-5 p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <Users className="w-8 h-8 text-white" />
                 </div>
@@ -128,7 +132,7 @@ export default function MainPage() {
               </CardContent>
             </Card>
             <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-emerald-200">
-              <CardContent className="p-8 text-center">
+              <CardContent className=" mt-5 p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <Trophy className="w-8 h-8 text-white" />
                 </div>
@@ -198,7 +202,7 @@ export default function MainPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 hover:border-purple-200">
-              <CardContent className="p-8">
+              <CardContent className="mt-5 p-8">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-5 h-5 text-coral-500 fill-current" />
@@ -220,7 +224,7 @@ export default function MainPage() {
               </CardContent>
             </Card>
             <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 hover:border-teal-200">
-              <CardContent className="p-8">
+              <CardContent className="mt-5 p-8">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-5 h-5 text-coral-500 fill-current" />
@@ -275,7 +279,7 @@ export default function MainPage() {
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
-                  InterviewAI
+                  MockMate
                 </span>
               </div>
               <p className="text-slate-400">Empowering careers through AI-powered interview preparation.</p>
@@ -342,7 +346,7 @@ export default function MainPage() {
             </div>
           </div>
           <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 InterviewAI. All rights reserved.</p>
+            <p>&copy; 2024 MockMate. All rights reserved.</p>
           </div>
         </div>
       </footer>

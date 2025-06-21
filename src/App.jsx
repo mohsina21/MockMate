@@ -20,7 +20,14 @@ function App() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/cam" element={<TestCamera />} />
             <Route path="/" element={<MainPage />} />
-            <Route path="/interview" element={<Mentor />} />
+            <Route
+      path="/interview"
+      element={
+        <ProtectedRoute>
+          <Mentor />
+        </ProtectedRoute>
+      }
+    />
           {/* Add other routes as needed */}
         </Routes>
       </Router>

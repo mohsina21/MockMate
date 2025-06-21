@@ -1,10 +1,35 @@
+import React, { useEffect, useState } from "react";
 import { Button } from "./button";
 import { Card, CardContent } from "./card"
 import { ArrowRight, Users, Brain, Trophy, Star, Zap, Shield, Award } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button1 from "./UI/Buttons1";
+import { auth } from "../Utils/Firebase";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 
 export default function MainPage() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    setUser(null);
+    navigate("/");
+  };
+
+  const handleStartInterview = () => {
+    if (user) {
+      navigate("/interview");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
       {/* Header */}
@@ -29,11 +54,32 @@ export default function MainPage() {
               Reviews
             </a>
           </nav>
-          <Link to="/interview">
-            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="flex items-center gap-3">
+            {!user ? (
+              <Link to="/auth">
+                <Button
+                  variant="outline"
+                  className="border-slate-300 text-purple-700 hover:bg-purple-50 active:bg-purple-200 focus:bg-purple-200 px-6 py-2 font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  Login / Sign In
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                className="border-slate-300 text-purple-700 hover:bg-purple-50 active:bg-purple-200 focus:bg-purple-200 px-6 py-2 font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                Sign Out
+              </Button>
+            )}
+            <Button
+              onClick={handleStartInterview}
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               Start Interview
             </Button>
-          </Link>
+          </div>
         </div>
       </header>
 

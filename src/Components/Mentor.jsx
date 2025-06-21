@@ -1,14 +1,22 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./button";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
-import { Textarea } from "./textarea"
 import { Badge } from "./badge";
-import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target, Camera, Video, VideoOff, Lightbulb, CheckCircle, Clock, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "./card";
+import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../Utils/Firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { askAzureText, askAzureWithImage } from "../Utils/azureOpenAi";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "./select";
 
-export default function Mentor() {  const [isStarted, setIsStarted] = useState(false);
+export default function Mentor() {
+  const [isStarted, setIsStarted] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -20,6 +28,9 @@ export default function Mentor() {  const [isStarted, setIsStarted] = useState(f
   const [isLoading, setIsLoading] = useState(false);
   const [interviewQuestions, setInterviewQuestions] = useState([]);
   const [mode, setMode] = useState("text");
+  const [user, setUser] = useState(null);
+  const [timer, setTimer] = useState(null); // total seconds
+  const [timeLeft, setTimeLeft] = useState(null);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
@@ -320,6 +331,42 @@ Experience Level: ${level}`;
     setMode("text");
   };
 
+  // Set timer based on number of questions (1 min per question as example)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (isStarted && interviewQuestions.length > 0) {
+      const minutes = interviewQuestions.length; // 1 min per question
+      setTimer(minutes * 60);
+      setTimeLeft(minutes * 60);
+    }
+  }, [isStarted, interviewQuestions.length]);
+
+  // Countdown logic
+  useEffect(() => {
+    if (!isStarted || isComplete || timeLeft === null) return;
+    if (timeLeft <= 0) {
+      setIsComplete(true);
+      return;
+    }
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isStarted, isComplete, timeLeft]);
+
+  // Format time as MM:SS
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
   if (!isStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
@@ -452,7 +499,8 @@ Experience Level: ${level}`;
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Reset
-            </Button>            <div className="flex items-center space-x-2">
+            </Button>
+            <div className="flex items-center space-x-2">
               <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50">
                 {selectedRole}
               </Badge>
@@ -467,8 +515,23 @@ Experience Level: ${level}`;
               )}
             </div>
           </div>
-          <div className="text-sm font-medium text-slate-600 bg-white/60 px-3 py-1 rounded-full">
-            Question {currentQuestion + 1} of {interviewQuestions.length}
+          <div className="flex items-center gap-4">
+            {isStarted && (
+              <div className="flex items-center gap-2 bg-white/60 px-3 py-1 rounded-full text-slate-600 text-sm font-medium">
+                <Clock className="w-4 h-4 text-purple-600" />
+                <span>{formatTime(timeLeft ?? 0)}</span>
+              </div>
+            )}
+            {!user && (
+              <Link to="/auth">
+                <Button
+                  variant="outline"
+                  className="border-slate-300 text-purple-700 hover:bg-purple-50 active:bg-purple-200 focus:bg-purple-200 px-6 py-2 font-semibold shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  Login / Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>

@@ -6,8 +6,8 @@ import { Textarea } from "./textarea"
 import { Badge } from "./badge";
 import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-
-export default function Mentor() {
+import { Play } from "lucide-react";
+export default function InterviewPage() {
   const [isStarted, setIsStarted] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -17,7 +17,8 @@ export default function Mentor() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const messagesEndRef = useRef(null);
-
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+const timerRef = useRef(null);
   const interviewQuestions = [
     "Tell me about yourself and your background.",
     "Why are you interested in this position?",
@@ -26,6 +27,11 @@ export default function Mentor() {
     "Where do you see yourself in 5 years?",
     "Do you have any questions for me?",
   ];
+const formatTime = (seconds) => {
+  const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const secs = (seconds % 60).toString().padStart(2, '0');
+  return `${mins}:${secs}`;
+};
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,6 +40,10 @@ export default function Mentor() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    return () => clearInterval(timerRef.current);
+  }, []);
 
   const startInterview = () => {
     if (!selectedRole || !selectedLevel) return;
@@ -46,6 +56,12 @@ export default function Mentor() {
       timestamp: new Date(),
     };
     setMessages([welcomeMessage]);
+    setSecondsElapsed(0);
+clearInterval(timerRef.current);
+timerRef.current = setInterval(() => {
+  setSecondsElapsed((prev) => prev + 1);
+}, 1000);
+
   };
 
   const sendMessage = () => {
@@ -91,6 +107,9 @@ export default function Mentor() {
     setCurrentQuestion(0);
     setIsComplete(false);
     setCurrentInput("");
+    clearInterval(timerRef.current);
+setSecondsElapsed(0);
+
   };
 
   if (!isStarted) {
@@ -229,6 +248,10 @@ export default function Mentor() {
           <div className="text-sm font-medium text-slate-600 bg-white/60 px-3 py-1 rounded-full">
             Question {currentQuestion + 1} of {interviewQuestions.length}
           </div>
+          <div className="text-sm font-medium text-slate-600 bg-white/60 px-3 py-1 rounded-full">
+  Time: {formatTime(secondsElapsed)}
+</div>
+
         </div>
       </header>
 
@@ -322,9 +345,12 @@ export default function Mentor() {
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Questions Completed</span>
                     <span className="text-slate-900 font-semibold">
-                      {currentQuestion + (messages.filter((m) => m.type === "user").length > 0 ? 1 : 0)} /{" "}
-                      {interviewQuestions.length}
+                      {currentQuestion + (messages.filter((m) => m.type === "user").length > 0 ? 1 : 0)} / {interviewQuestions.length}
                     </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Time Elapsed</span>
+                    <span className="text-slate-900 font-semibold">{formatTime(secondsElapsed)}</span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-3">
                     <div

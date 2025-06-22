@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./button";
 import { Badge } from "./badge";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
-import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users } from "lucide-react";
+import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users, Play, Camera } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../Utils/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -14,6 +14,7 @@ import {
   SelectItem,
   SelectValue
 } from "./select";
+import { Textarea } from "./textarea";
 
 export default function Mentor() {
   const [isStarted, setIsStarted] = useState(false);
@@ -517,10 +518,21 @@ Experience Level: ${level}`;
           </div>
           <div className="flex items-center gap-4">
             {isStarted && (
-              <div className="flex items-center gap-2 bg-white/60 px-3 py-1 rounded-full text-slate-600 text-sm font-medium">
-                <Clock className="w-4 h-4 text-purple-600" />
-                <span>{formatTime(timeLeft ?? 0)}</span>
-              </div>
+              <button
+                type="button"
+                className="flex items-center gap-2 px-5 py-2 rounded-full font-bold text-lg shadow-lg border-2 border-white focus:outline-none"
+                style={{
+                  background: "linear-gradient(135deg, #8b5cf6 0%, #14b8a6 100%)", // purple to teal
+                  color: "#fff",
+                  boxShadow: "0 0 16px #8b5cf6, 0 0 32px #14b8a6",
+                  transition: "box-shadow 0.3s",
+                }}
+                tabIndex={-1}
+                aria-label="Interview Timer"
+              >
+                <Clock className="w-6 h-6 text-white drop-shadow" />
+                <span className="tracking-widest">{formatTime(timeLeft ?? 0)}</span>
+              </button>
             )}
             {!user && (
               <Link to="/auth">

@@ -249,19 +249,22 @@ Experience Level: ${level}`;
     setCurrentInput("");
     setIsLoading(true);
 
-    try {
-      // Generate AI response based on the answer
+    try {      // Generate AI response based on the answer
       let botResponse = "";
       
       if (currentQuestion < interviewQuestions.length - 1) {
-        const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Then ask the next question: "${interviewQuestions[currentQuestion + 1]}"`;
+        const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Then ask the next question: "${interviewQuestions[currentQuestion + 1]}". Please provide a clean response without any markdown formatting like ** or *.`;
         
         botResponse = await askAzureText(feedbackPrompt);
+        // Clean the response from markdown formatting
+        botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
         setCurrentQuestion((prev) => prev + 1);
       } else {
-        const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging.`;
+        const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging. Please provide a clean response without any markdown formatting like ** or *.`;
         
         botResponse = await askAzureText(finalFeedbackPrompt);
+        // Clean the response from markdown formatting
+        botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
         setIsComplete(true);
       }
 
@@ -277,17 +280,19 @@ Experience Level: ${level}`;
       // Capture image for posture analysis if video is available
       if (videoRef.current && videoRef.current.videoWidth > 0) {
         const img = captureImage();
-        if (img) {
-          try {
+        if (img) {          try {
             const imageFeedback = await askAzureWithImage(
-              "Analyze this candidate's posture and body language in a mock interview setting. Provide 2-3 brief, constructive tips for improvement. Focus on professional presentation.",
+              "Analyze this candidate's posture and body language in a mock interview setting. Provide 2-3 brief, constructive tips for improvement. Focus on professional presentation. Please provide a clean response without any markdown formatting like ** or *.",
               img
             );
+            
+            // Clean the response from markdown formatting
+            const cleanImageFeedback = imageFeedback.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
             
             const postureMessage = {
               id: (Date.now() + 2).toString(),
               type: "bot",
-              content: `📸 **Posture & Body Language Feedback:**\n${imageFeedback}`,
+              content: `📸 Posture & Body Language Feedback:\n${cleanImageFeedback}`,
               timestamp: new Date(),
             };
             

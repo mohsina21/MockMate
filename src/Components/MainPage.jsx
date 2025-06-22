@@ -6,10 +6,19 @@ import { Link, useNavigate } from "react-router-dom";
 import Button1 from "./UI/Buttons1";
 import { auth } from "../Utils/Firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
+import { motion } from "framer-motion";
 
 export default function MainPage() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+    const [x, setX] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setX((prev) => (prev >= 100 ? 0 : prev + 1));
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -29,6 +38,60 @@ export default function MainPage() {
       navigate("/auth");
     }
   };
+  
+  // Animation variants
+  const fadeInUp = {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.8, ease: "easeOut" }
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -60 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8, ease: "easeOut" }
+  };
+
+  const fadeInRight = {
+    initial: { opacity: 0, x: 60 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8, ease: "easeOut" }
+  };
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 50, scale: 0.9 },
+    animate: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.6, ease: "easeOut" }
+    },
+    hover: { 
+      y: -8, 
+      scale: 1.02,
+      transition: { duration: 0.3, ease: "easeOut" }
+    }
+  };
+
+  const floatingAnimation = {
+    animate: {
+      y: [-5, 5, -5],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
@@ -95,9 +158,24 @@ export default function MainPage() {
             <span className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 bg-clip-text text-transparent">
               Master Your Next
             </span>
-            <span className="bg-gradient-to-r from-purple-600 to-teal-600 bg-clip-text text-transparent block">
-              Interview
-            </span>
+            <motion.span
+      className="block text-transparent bg-clip-text"
+      style={{
+        backgroundImage: "linear-gradient(90deg, #9333ea, #14b8a6, #9333ea)",
+        backgroundSize: "200% 100%",
+        display: "inline-block",
+      }}
+      animate={{
+        backgroundPosition: ["0% 50%", "100% 50%"],
+      }}
+      transition={{
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeIn",
+      }}
+    >
+      Interview
+    </motion.span>
           </h1>
           <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
             Practice with our AI-powered interview bot. Get personalized feedback, improve your skills, and land your
@@ -142,158 +220,267 @@ export default function MainPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-4 bg-white">
+    <motion.section 
+        id="features" 
+        className="py-20 px-4 bg-white"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-purple-100 px-4 py-2 rounded-full text-sm font-medium text-teal-700 mb-4">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div 
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-purple-100 px-4 py-2 rounded-full text-sm font-medium text-teal-700 mb-4"
+              whileHover={{ scale: 1.05 }}
+            >
               <Award className="w-4 h-4" />
               <span>Premium Features</span>
-            </div>
+            </motion.div>
             <h2 className="text-4xl font-bold text-slate-900 mb-4">Why Choose InterviewAI?</h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
               Our platform combines cutting-edge AI technology with proven interview techniques
             </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-purple-200">
-              <CardContent className="p-8 mt-5 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <Brain className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-4">AI-Powered Feedback</h3>
-                <p className="text-slate-600 leading-relaxed">
-                  Get instant, personalized feedback on your responses, body language, and communication skills.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-teal-200">
-              <CardContent className="mt-5 p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-4">Industry-Specific</h3>
-                <p className="text-slate-600 leading-relaxed">
-                  Practice with questions tailored to your field, from tech and finance to healthcare and education.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 group hover:border-emerald-200">
-              <CardContent className=" mt-5 p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <Trophy className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-4">Track Progress</h3>
-                <p className="text-slate-600 leading-relaxed">
-                  Monitor your improvement over time with detailed analytics and performance metrics.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                icon: Brain,
+                title: "AI-Powered Feedback",
+                description: "Get instant, personalized feedback on your responses, body language, and communication skills.",
+                gradient: "from-purple-500 to-purple-600",
+                hoverColor: "hover:border-purple-200"
+              },
+              {
+                icon: Users,
+                title: "Industry-Specific",
+                description: "Practice with questions tailored to your field, from tech and finance to healthcare and education.",
+                gradient: "from-teal-500 to-teal-600",
+                hoverColor: "hover:border-teal-200"
+              },
+              {
+                icon: Trophy,
+                title: "Track Progress",
+                description: "Monitor your improvement over time with detailed analytics and performance metrics.",
+                gradient: "from-emerald-500 to-emerald-600",
+                hoverColor: "hover:border-emerald-200"
+              }
+            ].map((feature, index) => (
+              <motion.div key={index} variants={cardVariants}>
+                <Card className={`border-slate-200 hover:shadow-xl transition-all duration-300 group ${feature.hoverColor} h-full`}>
+                  <CardContent className="p-8 mt-5 text-center h-full flex flex-col">
+                    <motion.div 
+                      className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300`}
+                      whileHover={{ 
+                        rotate: [0, -10, 10, -10, 0],
+                        scale: 1.1 
+                      }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <feature.icon className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <h3 className="text-xl font-semibold text-slate-900 mb-4">{feature.title}</h3>
+                    <p className="text-slate-600 leading-relaxed flex-grow">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* How it Works */}
-      <section id="how-it-works" className="py-20 px-4 bg-gradient-to-br from-slate-50 to-purple-50">
+      <motion.section 
+        id="how-it-works" 
+        className="py-20 px-4 bg-gradient-to-br from-slate-50 to-purple-50"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-white/80 px-4 py-2 rounded-full text-sm font-medium text-slate-700 mb-4 shadow-sm">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div 
+              className="inline-flex items-center space-x-2 bg-white/80 px-4 py-2 rounded-full text-sm font-medium text-slate-700 mb-4 shadow-sm"
+              whileHover={{ scale: 1.05 }}
+            >
               <Shield className="w-4 h-4" />
               <span>Simple Process</span>
-            </div>
+            </motion.div>
             <h2 className="text-4xl font-bold text-slate-900 mb-4">How It Works</h2>
             <p className="text-xl text-slate-600">Simple steps to interview success</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center group">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300">
-                1
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Choose Your Role</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Select your target position and industry for personalized questions
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300">
-                2
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Practice Interview</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Engage with our AI interviewer in a realistic interview simulation
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300">
-                3
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Get Feedback</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Receive detailed analysis and tips to improve your performance
-              </p>
-            </div>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                number: "1",
+                title: "Choose Your Role",
+                description: "Select your target position and industry for personalized questions",
+                gradient: "from-purple-600 to-purple-700"
+              },
+              {
+                number: "2",
+                title: "Practice Interview",
+                description: "Engage with our AI interviewer in a realistic interview simulation",
+                gradient: "from-teal-600 to-teal-700"
+              },
+              {
+                number: "3",
+                title: "Get Feedback",
+                description: "Receive detailed analysis and tips to improve your performance",
+                gradient: "from-emerald-600 to-emerald-700"
+              }
+            ].map((step, index) => (
+              <motion.div 
+                key={index}
+                className="text-center group"
+                variants={cardVariants}
+                whileHover={{ y: -5 }}
+              >
+                <motion.div 
+                  className={`w-16 h-16 bg-gradient-to-br ${step.gradient} text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-lg group-hover:shadow-xl transition-all duration-300`}
+                  whileHover={{ 
+                    scale: 1.1,
+                    rotate: [0, -5, 5, 0] 
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {step.number}
+                </motion.div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-20 px-4 bg-white">
+       <motion.section 
+        id="testimonials" 
+        className="py-20 px-4 bg-white"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-coral-100 to-purple-100 px-4 py-2 rounded-full text-sm font-medium text-coral-700 mb-4">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div 
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-coral-100 to-purple-100 px-4 py-2 rounded-full text-sm font-medium text-coral-700 mb-4"
+              whileHover={{ scale: 1.05 }}
+            >
               <Star className="w-4 h-4" />
               <span>Success Stories</span>
-            </div>
+            </motion.div>
             <h2 className="text-4xl font-bold text-slate-900 mb-4">Success Stories</h2>
             <p className="text-xl text-slate-600">See how InterviewAI helped others land their dream jobs</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 hover:border-purple-200">
-              <CardContent className="mt-5 p-8">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-coral-500 fill-current" />
-                  ))}
-                </div>
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  "InterviewAI helped me prepare for my software engineering interviews. The feedback was incredibly
-                  detailed and helped me identify areas I never knew I needed to work on."
-                </p>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-teal-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold">SM</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900">Sarah Martinez</p>
-                    <p className="text-sm text-slate-600">Software Engineer at Google</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 hover:shadow-xl transition-all duration-300 hover:border-teal-200">
-              <CardContent className="mt-5 p-8">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-coral-500 fill-current" />
-                  ))}
-                </div>
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  "As a recent graduate, I was nervous about interviews. This platform gave me the confidence and skills
-                  I needed to succeed in my job search."
-                </p>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold">JD</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900">James Davis</p>
-                    <p className="text-sm text-slate-600">Marketing Manager at Microsoft</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                name: "Sarah Martinez",
+                role: "Software Engineer at Google",
+                initials: "SM",
+                gradient: "from-purple-500 to-teal-500",
+                quote: "InterviewAI helped me prepare for my software engineering interviews. The feedback was incredibly detailed and helped me identify areas I never knew I needed to work on.",
+                hoverColor: "hover:border-purple-200"
+              },
+              {
+                name: "James Davis",
+                role: "Marketing Manager at Microsoft",
+                initials: "JD",
+                gradient: "from-teal-500 to-emerald-500",
+                quote: "As a recent graduate, I was nervous about interviews. This platform gave me the confidence and skills I needed to succeed in my job search.",
+                hoverColor: "hover:border-teal-200"
+              }
+            ].map((testimonial, index) => (
+              <motion.div key={index} variants={cardVariants}>
+                <Card className={`border-slate-200 hover:shadow-xl transition-all duration-300 ${testimonial.hoverColor} h-full`}>
+                  <CardContent className="mt-5 p-8 h-full flex flex-col">
+                    <motion.div 
+                      className="flex items-center mb-4"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: index * 0.2 }}
+                    >
+                      {[...Array(5)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: i * 0.1 }}
+                        >
+                          <Star className="w-5 h-5 text-coral-500 fill-current" />
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                    <p className="text-slate-600 mb-6 leading-relaxed flex-grow">
+                      "{testimonial.quote}"
+                    </p>
+                    <div className="flex items-center">
+                      <motion.div 
+                        className={`w-12 h-12 bg-gradient-to-br ${testimonial.gradient} rounded-full flex items-center justify-center mr-4`}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <span className="text-white font-semibold">{testimonial.initials}</span>
+                      </motion.div>
+                      <div>
+                        <p className="font-semibold text-slate-900">{testimonial.name}</p>
+                        <p className="text-sm text-slate-600">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-purple-600 via-purple-700 to-teal-700 relative overflow-hidden">

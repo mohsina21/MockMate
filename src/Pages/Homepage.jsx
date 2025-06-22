@@ -7,34 +7,33 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Brain className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-teal-700 bg-clip-text text-transparent">
-              InterviewAI
-            </span>
+      <header className="sticky top-0 z-[999] bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm text-black">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <Brain className="w-5 h-5 text-white" />
           </div>
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-slate-600 hover:text-purple-700 transition-colors font-medium">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-slate-600 hover:text-purple-700 transition-colors font-medium">
-              How it Works
-            </a>
-            <a href="#testimonials" className="text-slate-600 hover:text-purple-700 transition-colors font-medium">
-              Reviews
-            </a>
-          </nav>
-          <Link to="/interview">
-            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300">
-              Start Interview
+          <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-teal-700 bg-clip-text text-transparent">
+            MockMate
+          </span>
+        </div>
+        <nav className="hidden md:flex items-center space-x-8">
+          <a href="#features" className="text-slate-600 hover:text-purple-700 font-medium">Features</a>
+          <a href="#how-it-works" className="text-slate-600 hover:text-purple-700 font-medium">How it Works</a>
+          <a href="#testimonials" className="text-slate-600 hover:text-purple-700 font-medium">Reviews</a>
+        </nav>
+        <div className="flex items-center gap-3">
+          <Link to="/auth">
+            <Button variant="outline" className="border-slate-300 text-purple-700 hover:bg-purple-50">
+              Login / Sign In
             </Button>
           </Link>
+          <Button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
+            Start Interview
+          </Button>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* Hero Section */}
       <section className="py-20 px-4 relative overflow-hidden">

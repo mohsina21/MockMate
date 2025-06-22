@@ -821,7 +821,7 @@ Experience Level: ${level}`;
                     <div className="bg-white/60 rounded-lg p-3 text-center">
                       <Clock className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
                       <div className="font-semibold text-emerald-800">Duration</div>
-                      <div className="text-emerald-600">~{Math.ceil(messages.length * 0.5)} min</div>
+                      <div className="text-emerald-600">{formatTime(timer - timeLeft)}</div>
                     </div>
                     <div className="bg-white/60 rounded-lg p-3 text-center">
                       <Users className="w-4 h-4 mx-auto mb-1 text-emerald-600" />

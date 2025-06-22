@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 import { Textarea } from "./textarea"
 import { Badge } from "./badge";
-import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target } from "lucide-react";
+import { Mic, MicOff, Send, ArrowLeft, Play, RotateCcw, Brain, Zap, Target, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
 export default function InterviewPage() {
@@ -412,6 +412,16 @@ setSecondsElapsed(0);
                     Great job completing the interview! Your detailed feedback and performance analysis will be
                     available shortly.
                   </p>
+                  <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
+    <div className="bg-white/60 rounded-lg p-3 text-center">
+      <Clock className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
+      <div className="font-semibold text-emerald-800">Duration</div>
+      <div className="text-emerald-600">{formatTime(secondsElapsed)}</div>
+    </div>
+    <div className="bg-white/60 rounded-lg p-3 text-center">
+      {/* ...other stats... */}
+    </div>
+  </div>
                   <Button
                     onClick={resetInterview}
                     className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"

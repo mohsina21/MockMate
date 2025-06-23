@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./button";
 import { Badge } from "./badge";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
-import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users, Play, Camera } from "lucide-react";
+import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users, Play, Camera, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { auth } from "../Utils/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -920,6 +920,29 @@ Experience Level: ${level}`;
           </div>
         </div>
       </div>
+
+      {selectedLevel && (
+        <Card className="border-slate-200 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-slate-100">
+            <CardTitle className="text-lg text-slate-900 flex items-center space-x-2">
+              <Shield className="w-5 h-5 text-purple-600" />
+              <span>Terms & Interview Etiquette</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <ul className="text-sm text-slate-700 space-y-3 list-disc pl-5">
+              <li>Ensure you are in a well-lit environment for clear video analysis.</li>
+              <li>Maintain a good posture: sit upright and face the camera directly.</li>
+              <li>Dress appropriately as you would for a real interview.</li>
+              <li>Minimize background noise and distractions.</li>
+              <li>Be prepared with a notepad and pen if needed.</li>
+              <li>Keep your mobile phone on silent mode.</li>
+              <li>Be honest and authentic in your responses.</li>
+              <li>By starting, you agree to these terms and to being recorded for feedback purposes.</li>
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

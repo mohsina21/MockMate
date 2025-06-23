@@ -503,86 +503,31 @@ export default function MainPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-xl flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent">
-                  MockMate
-                </span>
-              </div>
-              <p className="text-slate-400">Empowering careers through AI-powered interview preparation.</p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4 text-slate-200">Product</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    API
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4 text-slate-200">Company</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4 text-slate-200">Support</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 MockMate. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <footer className="bg-purple-900 text-white py-6 px-4 text-center text-sm">
+  <div>
+    © 2025 All rights reserved.
+  </div>
+  <div className="mt-1">
+    Made by{" "}
+    <a
+      href="https://www.linkedin.com/in/mohsinaparveen"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:text-purple-600 font-semibold transition-colors duration-200"
+    >
+      Mohsina Parveen
+    </a>
+    {" "}and{" "}
+    <a
+      href="https://www.linkedin.com/in/ronitbali"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:text-purple-600 font-semibold transition-colors duration-200"
+    >
+      Ronit Bali
+    </a>
+  </div>
+</footer>
     </div>
   );
 }

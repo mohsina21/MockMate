@@ -194,26 +194,26 @@ export default function MainPage() {
                  Start Free Interview
               </Button1>
             </Link>
-            <Button
+            {/* <Button
               size="lg"
               variant="outline"
               className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-4 text-lg shadow-sm hover:shadow-md transition-all duration-300"
             >
               Watch Demo
-            </Button>
+            </Button> */}
           </div>
           <div className="mt-12 flex items-center justify-center space-x-8 text-slate-600">
             <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
-              <Users className="w-5 h-5 text-teal-600" />
-              <span className="text-sm font-medium">10,000+ Users</span>
+              {/* <Users className="w-5 h-5 text-teal-600" /> */}
+              {/* <span className="text-sm font-medium">10,000+ Users</span> */}
             </div>
             <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
-              <Star className="w-5 h-5 text-coral-500 fill-current" />
-              <span className="text-sm font-medium">4.9/5 Rating</span>
+              {/* <Star className="w-5 h-5 text-coral-500 fill-current" /> */}
+              {/* <span className="text-sm font-medium">4.9/5 Rating</span> */}
             </div>
             <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
-              <Trophy className="w-5 h-5 text-emerald-600" />
-              <span className="text-sm font-medium">85% Success Rate</span>
+              {/* <Trophy className="w-5 h-5 text-emerald-600" /> */}
+              {/* <span className="text-sm font-medium">85% Success Rate</span> */}
             </div>
           </div>
         </div>

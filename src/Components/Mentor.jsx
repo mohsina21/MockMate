@@ -3,10 +3,11 @@ import { Button } from "./button";
 import { Badge } from "./badge";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
 import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users, Play, Camera } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { auth } from "../Utils/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { askAzureText, askAzureWithImage } from "../Utils/azureOpenAi";
+import InterviewResults from "./InterviewResults";
 import {
   Select,
   SelectTrigger,
@@ -17,29 +18,92 @@ import {
 import { Textarea } from "./textarea";
 
 export default function Mentor() {
+  // All available roles for searching
+  const allRoles = [
+    // Software Development & Engineering
+    "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
+    "Mobile App Developer", "Game Developer", "DevOps Engineer", "Site Reliability Engineer (SRE)",
+    "Software Architect", "Technical Lead",
+    
+    // Data & Analytics
+    "Data Scientist", "Data Engineer", "Data Analyst", "Machine Learning Engineer",
+    "AI Engineer", "Business Intelligence Analyst",
+    
+    // Cloud & Infrastructure
+    "Cloud Engineer", "Cloud Architect", "AWS Solutions Architect", "Azure Solutions Architect",
+    "Systems Administrator", "Network Engineer", "Infrastructure Engineer",
+    
+    // Cybersecurity
+    "Cybersecurity Analyst", "Security Engineer", "Penetration Tester", "Information Security Manager",
+    
+    // Quality Assurance & Testing
+    "QA Engineer", "Test Automation Engineer", "Performance Test Engineer",
+    
+    // Design & User Experience
+    "UX/UI Designer", "UX Designer", "UI Designer", "Product Designer",
+    
+    // Product & Project Management
+    "Product Manager", "Technical Product Manager", "Project Manager", "Scrum Master", "Agile Coach",
+    
+    // Business & Analysis
+    "Business Analyst", "Systems Analyst", "IT Business Analyst",
+    
+    // Database & Backend Systems
+    "Database Administrator (DBA)", "Database Developer", "API Developer",
+    
+    // Sales & Marketing (Tech)
+    "Technical Sales Engineer", "Solutions Engineer", "Marketing Manager", "Sales Representative",
+    
+    // Consulting & Leadership
+    "Management Consultant", "IT Consultant", "Technology Consultant", "Engineering Manager",
+    "Chief Technology Officer (CTO)", "IT Director"
+  ];
+
   const [isStarted, setIsStarted] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [currentInput, setCurrentInput] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
+  const [currentInput, setCurrentInput] = useState("");  const [selectedRole, setSelectedRole] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [roleSearchTerm, setRoleSearchTerm] = useState("");
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);  const [isLoading, setIsLoading] = useState(false);
   const [interviewQuestions, setInterviewQuestions] = useState([]);
-  const [mode, setMode] = useState("text");
   const [user, setUser] = useState(null);
   const [timer, setTimer] = useState(null); // total seconds
   const [timeLeft, setTimeLeft] = useState(null);
+  const [userResponses, setUserResponses] = useState([]); // Store user responses
+  const [aiFeedback, setAiFeedback] = useState([]); // Store AI feedback for end display
+  const [showResults, setShowResults] = useState(false); // Show results page
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const roleDropdownRef = useRef(null);
+
+  // Filter roles based on search term
+  const filteredRoles = allRoles.filter(role => 
+    role.toLowerCase().includes(roleSearchTerm.toLowerCase())
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target)) {
+        setShowRoleDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -108,7 +172,7 @@ export default function Mentor() {
   };
 
   // Generate AI questions based on role and level
-  const generateInterviewQuestions = async (role, level, numQuestions = 6) => {
+  const generateInterviewQuestions = async (role, level, numQuestions = 10) => {
     try {      const prompt = `You are an experienced HR interviewer. Generate exactly ${numQuestions} interview questions for a ${level} level ${role} position. 
 
 Make the questions:
@@ -172,7 +236,7 @@ Experience Level: ${level}`;
     if (!selectedRole || !selectedLevel) return;
 
     setIsLoading(true);
-    const questions = await generateInterviewQuestions(selectedRole, selectedLevel, 6);
+    const questions = await generateInterviewQuestions(selectedRole, selectedLevel, 10);
     setInterviewQuestions(questions); // Fix: Set the questions in state
     
     setIsStarted(true);
@@ -233,54 +297,88 @@ Experience Level: ${level}`;
     if (recognitionRef.current) {
       recognitionRef.current.abort();
     }
-  };
-
-  const sendMessage = async () => {
+  };  const sendMessage = async () => {
     if (!currentInput.trim()) return;
 
     const userMessage = {
       id: Date.now().toString(),
       type: "user",
       content: currentInput,
+      question: interviewQuestions[currentQuestion],
       timestamp: new Date(),
     };
 
+    // Store user response and show in chat
+    setUserResponses((prev) => [...prev, userMessage]);
     setMessages((prev) => [...prev, userMessage]);
     setCurrentInput("");
     setIsLoading(true);
 
-    try {      // Generate AI response based on the answer
+    try {
+      // Generate AI response based on the answer
       let botResponse = "";
+      let nextQuestionOnly = "";
       
       if (currentQuestion < interviewQuestions.length - 1) {
-        const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Then ask the next question: "${interviewQuestions[currentQuestion + 1]}". Please provide a clean response without any markdown formatting like ** or *.`;
+        const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Please provide a clean response without any markdown formatting like ** or *.`;
         
         botResponse = await askAzureText(feedbackPrompt);
         // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+        
+        // Store feedback for end display
+        setAiFeedback((prev) => [...prev, {
+          id: Date.now().toString(),
+          questionNumber: currentQuestion + 1,
+          question: interviewQuestions[currentQuestion],
+          userAnswer: userMessage.content,
+          feedback: botResponse,
+          timestamp: new Date(),
+        }]);
+        
         setCurrentQuestion((prev) => prev + 1);
+        
+        // Only show the next question in chat
+        nextQuestionOnly = `Next question: ${interviewQuestions[currentQuestion + 1]}`;
       } else {
         const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging. Please provide a clean response without any markdown formatting like ** or *.`;
         
         botResponse = await askAzureText(finalFeedbackPrompt);
         // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+        
+        // Store final feedback
+        setAiFeedback((prev) => [...prev, {
+          id: Date.now().toString(),
+          questionNumber: currentQuestion + 1,
+          question: interviewQuestions[currentQuestion],
+          userAnswer: userMessage.content,
+          feedback: botResponse,
+          timestamp: new Date(),
+          isFinal: true,
+        }]);
+        
         setIsComplete(true);
+        // Show results page after a short delay
+        setTimeout(() => {
+          setShowResults(true);
+        }, 2000);
+        nextQuestionOnly = "Thank you for completing the interview! Loading your detailed results...";
       }
 
+      // Only add the next question or completion message to chat
       const botMessage = {
         id: (Date.now() + 1).toString(),
         type: "bot",
-        content: botResponse,
+        content: nextQuestionOnly,
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, botMessage]);
-
-      // Capture image for posture analysis if video is available
+      setMessages((prev) => [...prev, botMessage]);// Capture image for posture analysis if video is available
       if (videoRef.current && videoRef.current.videoWidth > 0) {
         const img = captureImage();
-        if (img) {          try {
+        if (img) {
+          try {
             const imageFeedback = await askAzureWithImage(
               "Analyze this candidate's posture and body language in a mock interview setting. Provide 2-3 brief, constructive tips for improvement. Focus on professional presentation. Please provide a clean response without any markdown formatting like ** or *.",
               img
@@ -289,26 +387,29 @@ Experience Level: ${level}`;
             // Clean the response from markdown formatting
             const cleanImageFeedback = imageFeedback.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
             
-            const postureMessage = {
-              id: (Date.now() + 2).toString(),
-              type: "bot",
-              content: `📸 Posture & Body Language Feedback:\n${cleanImageFeedback}`,
-              timestamp: new Date(),
-            };
-            
-            setMessages((prev) => [...prev, postureMessage]);
+            // Store camera feedback for end display (don't add to chat)
+            setAiFeedback((prev) => {
+              const updatedFeedback = [...prev];
+              const lastIndex = updatedFeedback.length - 1;
+              if (lastIndex >= 0) {
+                updatedFeedback[lastIndex] = {
+                  ...updatedFeedback[lastIndex],
+                  cameraFeedback: cleanImageFeedback
+                };
+              }
+              return updatedFeedback;
+            });
           } catch (imageError) {
             console.error("Image analysis error:", imageError);
           }
         }
-      }
-    } catch (error) {
+      }    } catch (error) {
       console.error("Error generating response:", error);
       let fallbackResponse = "";
       
       if (currentQuestion < interviewQuestions.length - 1) {
-        fallbackResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
         setCurrentQuestion((prev) => prev + 1);
+        fallbackResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
       } else {
         fallbackResponse = "Thank you for completing the interview! That concludes our session. You've done well.";
         setIsComplete(true);
@@ -325,16 +426,16 @@ Experience Level: ${level}`;
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const resetInterview = () => {
+  };  const resetInterview = () => {
     setIsStarted(false);
     setMessages([]);
     setCurrentQuestion(0);
     setIsComplete(false);
     setCurrentInput("");
     setInterviewQuestions([]);
-    setMode("text");
+    setUserResponses([]);
+    setAiFeedback([]);
+    setShowResults(false);
   };
 
   // Set timer based on number of questions (1 min per question as example)
@@ -342,10 +443,9 @@ Experience Level: ${level}`;
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
   }, []);
-
   useEffect(() => {
     if (isStarted && interviewQuestions.length > 0) {
-      const minutes = interviewQuestions.length; // 1 min per question
+      const minutes = 15; // 15 minutes total for the interview
       setTimer(minutes * 60);
       setTimeLeft(minutes * 60);
     }
@@ -372,6 +472,22 @@ Experience Level: ${level}`;
     const s = (secs % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
+
+  // Show results page if interview is complete
+  if (showResults) {
+    return (
+      <InterviewResults
+        selectedRole={selectedRole}
+        selectedLevel={selectedLevel}
+        interviewQuestions={interviewQuestions}
+        userResponses={userResponses}
+        aiFeedback={aiFeedback}
+        timer={timer}
+        timeLeft={timeLeft}
+        onStartNewInterview={resetInterview}
+      />
+    );
+  }
 
   if (!isStarted) {
     return (
@@ -405,26 +521,66 @@ Experience Level: ${level}`;
                 <CardTitle className="text-2xl text-slate-900">Setup Your AI Mock Interview</CardTitle>
                 <p className="text-slate-600">AI will generate personalized questions for your role</p>
               </CardHeader>
-              <CardContent className="space-y-6 p-8">
-                <div>
+              <CardContent className="space-y-6 p-8">                <div>
                   <label className="block text-sm font-medium text-slate-900 mb-3">
                     What role are you interviewing for?
                   </label>
-                  <Select value={selectedRole} onValueChange={setSelectedRole}>
-                    <SelectTrigger className="border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 h-12">
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Software Engineer">Software Engineer</SelectItem>
-                      <SelectItem value="Product Manager">Product Manager</SelectItem>
-                      <SelectItem value="Data Scientist">Data Scientist</SelectItem>
-                      <SelectItem value="Marketing Manager">Marketing Manager</SelectItem>
-                      <SelectItem value="Sales Representative">Sales Representative</SelectItem>
-                      <SelectItem value="Business Analyst">Business Analyst</SelectItem>
-                      <SelectItem value="UX/UI Designer">UX/UI Designer</SelectItem>
-                      <SelectItem value="Management Consultant">Management Consultant</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="relative" ref={roleDropdownRef}>
+                    <input
+                      type="text"
+                      value={selectedRole || roleSearchTerm}
+                      onChange={(e) => {
+                        setRoleSearchTerm(e.target.value);
+                        setSelectedRole("");
+                        setShowRoleDropdown(true);
+                      }}
+                      onFocus={() => setShowRoleDropdown(true)}
+                      placeholder="Search for a role..."
+                      className="w-full h-12 px-4 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 bg-white text-slate-900 placeholder-slate-500"
+                    />
+                    
+                    {showRoleDropdown && (roleSearchTerm || !selectedRole) && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {filteredRoles.length > 0 ? (
+                          filteredRoles.map((role, index) => (
+                            <div
+                              key={index}
+                              onClick={() => {
+                                setSelectedRole(role);
+                                setRoleSearchTerm("");
+                                setShowRoleDropdown(false);
+                              }}
+                              className="px-4 py-3 hover:bg-purple-50 cursor-pointer text-slate-900 border-b border-slate-100 last:border-b-0"
+                            >
+                              {role}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="px-4 py-3 text-slate-500 italic">
+                            No roles found matching "{roleSearchTerm}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {selectedRole && (
+                      <div className="mt-2 flex items-center space-x-2">
+                        <div className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                          Selected: {selectedRole}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedRole("");
+                            setRoleSearchTerm("");
+                            setShowRoleDropdown(false);
+                          }}
+                          className="text-slate-500 hover:text-red-500 text-sm"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -604,33 +760,12 @@ Experience Level: ${level}`;
 
           {/* Chat Area */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-                      <Brain className="w-5 h-5 text-white" />
-                    </div>
-                    <CardTitle className="text-lg text-slate-900">AI Interview Session</CardTitle>
+            <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant={mode === "text" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setMode("text")}
-                      className="text-xs"
-                    >
-                      Text
-                    </Button>
-                    <Button
-                      variant={mode === "voice" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setMode("voice")}
-                      className="text-xs"
-                    >
-                      Voice
-                    </Button>
-                  </div>
+                  <CardTitle className="text-lg text-slate-900">AI Interview Session</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -666,83 +801,61 @@ Experience Level: ${level}`;
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-sm text-slate-600">
                       Question {currentQuestion + 1} of {interviewQuestions.length}
-                    </div>
-                    <Button
+                    </div>                    <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setIsComplete(true)}
+                      onClick={() => {
+                        setIsComplete(true);
+                        setShowResults(true);
+                      }}
                       className="text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-300"
                     >
                       Finish Interview
-                    </Button>
-                  </div>
-                  {mode === "text" ? (
-                    <div className="flex space-x-3">
-                      <Textarea
-                        value={currentInput}
-                        onChange={(e) => setCurrentInput(e.target.value)}
-                        placeholder="Type your response here..."
-                        className="flex-1 min-h-[60px] border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 bg-white"
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            sendMessage();
-                          }
-                        }}
-                      />
-                      <div className="flex flex-col space-y-2">
+                    </Button>                  </div>
+                  <div className="flex space-x-3">
+                    <Textarea
+                      value={currentInput}
+                      onChange={(e) => setCurrentInput(e.target.value)}
+                      placeholder="Type your response here or use voice input..."
+                      className="flex-1 min-h-[60px] border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 bg-white"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                    />
+                    <div className="flex flex-col space-y-2">
+                      <Button
+                        onClick={sendMessage}
+                        disabled={!currentInput.trim() || isLoading}
+                        className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        size="sm"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                      {!isListening ? (
                         <Button
-                          onClick={sendMessage}
-                          disabled={!currentInput.trim() || isLoading}
-                          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          onClick={handleVoiceInput}
+                          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                           size="sm"
                         >
-                          <Send className="w-4 h-4" />
+                          <Mic className="w-4 h-4" />
                         </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="flex space-x-3 w-full">
-                        <Textarea
-                          value={currentInput}
-                          onChange={(e) => setCurrentInput(e.target.value)}
-                          placeholder="Voice input will appear here..."
-                          className="flex-1 min-h-[60px] border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 bg-white"
-                        />
+                      ) : (
                         <Button
-                          onClick={sendMessage}
-                          disabled={!currentInput.trim() || isLoading}
-                          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          onClick={stopListening}
+                          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                           size="sm"
                         >
-                          <Send className="w-4 h-4" />
+                          <MicOff className="w-4 h-4" />
                         </Button>
-                      </div>
-                      <div className="flex space-x-3">
-                        {!isListening ? (
-                          <Button
-                            onClick={handleVoiceInput}
-                            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                          >
-                            <Mic className="w-4 h-4 mr-2" />
-                            Start Speaking
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={stopListening}
-                            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                          >
-                            <MicOff className="w-4 h-4 mr-2" />
-                            Stop Listening
-                          </Button>
-                        )}
-                      </div>
-                      {isListening && (
-                        <div className="text-sm text-slate-600 animate-pulse">
-                          🎤 Listening... Speak your answer now
-                        </div>
                       )}
+                    </div>
+                  </div>
+                  {isListening && (
+                    <div className="text-sm text-slate-600 animate-pulse mt-2 text-center">
+                      🎤 Listening... Speak your answer now
                     </div>
                   )}
                 </div>
@@ -760,19 +873,17 @@ Experience Level: ${level}`;
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-4">                  <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Questions Completed</span>
                     <span className="text-slate-900 font-semibold">
-                      {currentQuestion + (messages.filter((m) => m.type === "user").length > 0 ? 1 : 0)} /{" "}
-                      {interviewQuestions.length}
+                      {userResponses.length} / {interviewQuestions.length}
                     </span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-3">
                     <div
                       className="bg-gradient-to-r from-teal-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
                       style={{
-                        width: `${((currentQuestion + (messages.filter((m) => m.type === "user").length > 0 ? 1 : 0)) / interviewQuestions.length) * 100}%`,
+                        width: `${(userResponses.length / interviewQuestions.length) * 100}%`,
                       }}
                     />
                   </div>
@@ -804,46 +915,8 @@ Experience Level: ${level}`;
                   <li className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></div>
                                  <span>Maintain eye contact and confident body posture</span>
-                  </li>                </ul>
-              </CardContent>
+                  </li>                </ul>              </CardContent>
             </Card>
-
-            {isComplete && (
-              <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 shadow-lg animate-in slide-in-from-right duration-500">
-                <CardHeader>
-                  <CardTitle className="text-lg text-emerald-800 flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce">
-                      <CheckCircle className="w-4 h-4 text-white" />
-                    </div>
-                    <span>Interview Complete!</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-emerald-700 mb-4 leading-relaxed">
-                    Excellent work! You've completed all {interviewQuestions.length} questions. Your responses showed great depth and thoughtfulness.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
-                    <div className="bg-white/60 rounded-lg p-3 text-center">
-                      <Clock className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
-                      <div className="font-semibold text-emerald-800">Duration</div>
-                      <div className="text-emerald-600">{formatTime(timer - timeLeft)}</div>
-                    </div>
-                    <div className="bg-white/60 rounded-lg p-3 text-center">
-                      <Users className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
-                      <div className="font-semibold text-emerald-800">Responses</div>
-                      <div className="text-emerald-600">{messages.filter(m => m.type === 'user').length}</div>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={resetInterview}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Start New Interview
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>

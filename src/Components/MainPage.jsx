@@ -510,7 +510,7 @@ export default function MainPage() {
   <div className="mt-1">
     Made by{" "}
     <a
-      href="https://www.linkedin.com/in/mohsinaparveen"
+      href="https://www.linkedin.com/in/mohsina-parveen-577367203/"
       target="_blank"
       rel="noopener noreferrer"
       className="underline hover:text-purple-600 font-semibold transition-colors duration-200"
@@ -519,7 +519,7 @@ export default function MainPage() {
     </a>
     {" "}and{" "}
     <a
-      href="https://www.linkedin.com/in/ronitbali"
+      href="https://www.linkedin.com/in/ronit-bali-xe/"
       target="_blank"
       rel="noopener noreferrer"
       className="underline hover:text-purple-600 font-semibold transition-colors duration-200"

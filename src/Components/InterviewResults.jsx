@@ -131,7 +131,7 @@ export default function InterviewResults({
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 text-center mt-5">
               <Clock className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
               <div className="text-2xl font-bold text-emerald-800">{formatTime(timer - timeLeft)}</div>
               <div className="text-sm text-emerald-600">Duration</div>
@@ -139,7 +139,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-teal-200 bg-gradient-to-r from-teal-50 to-blue-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 mt-5 text-center">
               <Users className="w-8 h-8 mx-auto mb-2 text-teal-600" />
               <div className="text-2xl font-bold text-teal-800">{userResponses.length}</div>
               <div className="text-sm text-teal-600">Questions Answered</div>
@@ -147,7 +147,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 mt-5 text-center">
               <Trophy className="w-8 h-8 mx-auto mb-2 text-purple-600" />
               <div className="text-2xl font-bold text-purple-800">{Math.round((userResponses.length / interviewQuestions.length) * 100)}%</div>
               <div className="text-sm text-purple-600">Completion Rate</div>
@@ -155,7 +155,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-red-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="pt-6 text-center">
               <Star className="w-8 h-8 mx-auto mb-2 text-orange-600" />
               <div className="text-2xl font-bold text-orange-800">{aiFeedback.filter(f => f.cameraFeedback).length}</div>
               <div className="text-sm text-orange-600">Camera Analyses</div>

@@ -24,36 +24,36 @@ export default function Mentor() {
     "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
     "Mobile App Developer", "Game Developer", "DevOps Engineer", "Site Reliability Engineer (SRE)",
     "Software Architect", "Technical Lead",
-    
+
     // Data & Analytics
     "Data Scientist", "Data Engineer", "Data Analyst", "Machine Learning Engineer",
     "AI Engineer", "Business Intelligence Analyst",
-    
+
     // Cloud & Infrastructure
     "Cloud Engineer", "Cloud Architect", "AWS Solutions Architect", "Azure Solutions Architect",
     "Systems Administrator", "Network Engineer", "Infrastructure Engineer",
-    
+
     // Cybersecurity
     "Cybersecurity Analyst", "Security Engineer", "Penetration Tester", "Information Security Manager",
-    
+
     // Quality Assurance & Testing
     "QA Engineer", "Test Automation Engineer", "Performance Test Engineer",
-    
+
     // Design & User Experience
     "UX/UI Designer", "UX Designer", "UI Designer", "Product Designer",
-    
+
     // Product & Project Management
     "Product Manager", "Technical Product Manager", "Project Manager", "Scrum Master", "Agile Coach",
-    
+
     // Business & Analysis
     "Business Analyst", "Systems Analyst", "IT Business Analyst",
-    
+
     // Database & Backend Systems
     "Database Administrator (DBA)", "Database Developer", "API Developer",
-    
+
     // Sales & Marketing (Tech)
     "Technical Sales Engineer", "Solutions Engineer", "Marketing Manager", "Sales Representative",
-    
+
     // Consulting & Leadership
     "Management Consultant", "IT Consultant", "Technology Consultant", "Engineering Manager",
     "Chief Technology Officer (CTO)", "IT Director"
@@ -63,12 +63,12 @@ export default function Mentor() {
   const [isListening, setIsListening] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [currentInput, setCurrentInput] = useState("");  const [selectedRole, setSelectedRole] = useState("");
+  const [currentInput, setCurrentInput] = useState(""); const [selectedRole, setSelectedRole] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [roleSearchTerm, setRoleSearchTerm] = useState("");
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);  const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false); const [isLoading, setIsLoading] = useState(false);
   const [interviewQuestions, setInterviewQuestions] = useState([]);
   const [user, setUser] = useState(null);
   const [timer, setTimer] = useState(null); // total seconds
@@ -84,7 +84,7 @@ export default function Mentor() {
   const roleDropdownRef = useRef(null);
 
   // Filter roles based on search term
-  const filteredRoles = allRoles.filter(role => 
+  const filteredRoles = allRoles.filter(role =>
     role.toLowerCase().includes(roleSearchTerm.toLowerCase())
   );
 
@@ -99,12 +99,13 @@ export default function Mentor() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-    };  }, []);
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -119,19 +120,19 @@ export default function Mentor() {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
           facingMode: 'user'
-        } 
+        }
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
         setIsCameraOn(true);
-        
+
         // Ensure video plays
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play().catch(err => {
@@ -169,12 +170,13 @@ export default function Mentor() {
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       return canvas.toDataURL("image/jpeg");
-    }    return null;
+    } return null;
   };
 
   // Generate AI questions based on role and level
   const generateInterviewQuestions = async (role, level, numQuestions = 10) => {
-    try {      const prompt = `You are an experienced HR interviewer. Generate exactly ${numQuestions} interview questions for a ${level} level ${role} position. 
+    try {
+      const prompt = `You are an experienced HR interviewer. Generate exactly ${numQuestions} interview questions for a ${level} level ${role} position. 
 
 Make the questions:
 - Realistic and relevant to the role
@@ -192,25 +194,25 @@ Return ONLY the questions, each on a new line, without numbers or bullet points.
 
 Role: ${role}
 Experience Level: ${level}`;
-      
+
       console.log("Generating questions with Azure OpenAI...");
       const response = await askAzureText(prompt);
       console.log("Azure response:", response);
-      
+
       // Parse the response to extract questions
       const questions = response
         .split('\n')
         .map(q => q.trim())
         .filter(q => q.length > 0 && q.includes('?'))
         .slice(0, numQuestions);
-      
+
       console.log("Parsed questions:", questions);
-      
+
       // If we got good questions, return them
       if (questions.length >= 3) {
         return questions;
       }
-      
+
       // Fallback: Use default questions if AI response wasn't good
       console.log("Using fallback questions");
       return questions.length > 0 ? questions : [
@@ -231,7 +233,8 @@ Experience Level: ${level}`;
         "Describe a challenging situation you faced and how you handled it.",
         "Where do you see yourself in 5 years?",
         "Do you have any questions for me?"
-      ];    }
+      ];
+    }
   };
   const startInterview = async () => {
     if (!selectedRole || !selectedLevel) return;
@@ -239,7 +242,7 @@ Experience Level: ${level}`;
     setIsLoading(true);
     const questions = await generateInterviewQuestions(selectedRole, selectedLevel, 10);
     setInterviewQuestions(questions); // Fix: Set the questions in state
-    
+
     setIsStarted(true);
     const welcomeMessage = {
       id: Date.now().toString(),
@@ -298,7 +301,7 @@ Experience Level: ${level}`;
     if (recognitionRef.current) {
       recognitionRef.current.abort();
     }
-  };  const sendMessage = async () => {
+  }; const sendMessage = async () => {
     if (!currentInput.trim()) return;
 
     const userMessage = {
@@ -319,14 +322,14 @@ Experience Level: ${level}`;
       // Generate AI response based on the answer
       let botResponse = "";
       let nextQuestionOnly = "";
-      
+
       if (currentQuestion < interviewQuestions.length - 1) {
         const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Please provide a clean response without any markdown formatting like ** or *.`;
-        
+
         botResponse = await askAzureText(feedbackPrompt);
         // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
-        
+
         // Store feedback for end display
         setAiFeedback((prev) => [...prev, {
           id: Date.now().toString(),
@@ -336,18 +339,18 @@ Experience Level: ${level}`;
           feedback: botResponse,
           timestamp: new Date(),
         }]);
-        
+
         setCurrentQuestion((prev) => prev + 1);
-        
+
         // Only show the next question in chat
         nextQuestionOnly = `Next question: ${interviewQuestions[currentQuestion + 1]}`;
       } else {
         const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging. Please provide a clean response without any markdown formatting like ** or *.`;
-        
+
         botResponse = await askAzureText(finalFeedbackPrompt);
         // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
-        
+
         // Store final feedback
         setAiFeedback((prev) => [...prev, {
           id: Date.now().toString(),
@@ -358,7 +361,7 @@ Experience Level: ${level}`;
           timestamp: new Date(),
           isFinal: true,
         }]);
-        
+
         setIsComplete(true);
         // Show results page after a short delay
         setTimeout(() => {
@@ -384,10 +387,10 @@ Experience Level: ${level}`;
               "Analyze this candidate's posture and body language in a mock interview setting. Provide 2-3 brief, constructive tips for improvement. Focus on professional presentation. Please provide a clean response without any markdown formatting like ** or *.",
               img
             );
-            
+
             // Clean the response from markdown formatting
             const cleanImageFeedback = imageFeedback.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
-            
+
             // Store camera feedback for end display (don't add to chat)
             setAiFeedback((prev) => {
               const updatedFeedback = [...prev];
@@ -404,10 +407,11 @@ Experience Level: ${level}`;
             console.error("Image analysis error:", imageError);
           }
         }
-      }    } catch (error) {
+      }
+    } catch (error) {
       console.error("Error generating response:", error);
       let fallbackResponse = "";
-      
+
       if (currentQuestion < interviewQuestions.length - 1) {
         setCurrentQuestion((prev) => prev + 1);
         fallbackResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
@@ -415,7 +419,7 @@ Experience Level: ${level}`;
         fallbackResponse = "Thank you for completing the interview! That concludes our session. You've done well.";
         setIsComplete(true);
       }
-      
+
       const botMessage = {
         id: (Date.now() + 1).toString(),
         type: "bot",
@@ -427,7 +431,7 @@ Experience Level: ${level}`;
     } finally {
       setIsLoading(false);
     }
-  };  const resetInterview = () => {
+  }; const resetInterview = () => {
     setIsStarted(false);
     setMessages([]);
     setCurrentQuestion(0);
@@ -506,7 +510,7 @@ Experience Level: ${level}`;
               <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
                 <Brain className="w-4 h-4 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-slate-900">AI Interview Setup</h1>
+              <h1 className=" text-center text-xl font-bold text-slate-900 ">AI Interview Setup</h1>
             </div>
             <div></div>
           </div>
@@ -525,158 +529,159 @@ Experience Level: ${level}`;
               <CardContent className="space-y-6 p-8">
                 {setupStep === 1 && (
                   <>
-                  {/* Role input */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-900 mb-3">
-                      What role are you interviewing for?
-                    </label>
-                    <div className="relative" ref={roleDropdownRef}>
-                      <input
-                        type="text"
-                        value={selectedRole || roleSearchTerm}
-                        onChange={(e) => {
-                          setRoleSearchTerm(e.target.value);
-                          setSelectedRole("");
-                          setShowRoleDropdown(true);
-                        }}
-                        onFocus={() => setShowRoleDropdown(true)}
-                        placeholder="Search for a role..."
-                        className="w-full h-12 px-4 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 bg-white text-slate-900 placeholder-slate-500"
-                      />
-                      {showRoleDropdown && (roleSearchTerm || !selectedRole) && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                          {filteredRoles.length > 0 ? (
-                            filteredRoles.map((role, index) => (
-                              <div
-                                key={index}
-                                onClick={() => {
-                                  setSelectedRole(role);
-                                  setRoleSearchTerm("");
-                                  setShowRoleDropdown(false);
-                                }}
-                                className="px-4 py-3 hover:bg-purple-50 cursor-pointer text-slate-900 border-b border-slate-100 last:border-b-0"
-                              >
-                                {role}
+                    {/* Role input */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-3">
+                        What role are you interviewing for?
+                      </label>
+                      <div className="relative" ref={roleDropdownRef}>
+                        <input
+                          type="text"
+                          value={selectedRole || roleSearchTerm}
+                          onChange={(e) => {
+                            setRoleSearchTerm(e.target.value);
+                            setSelectedRole("");
+                            setShowRoleDropdown(true);
+                          }}
+                          onFocus={() => setShowRoleDropdown(true)}
+                          placeholder="Search for a role..."
+                          className="w-full h-12 px-4 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 bg-white text-slate-900 placeholder-slate-500"
+                        />
+                        {showRoleDropdown && (roleSearchTerm || !selectedRole) && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            {filteredRoles.length > 0 ? (
+                              filteredRoles.map((role, index) => (
+                                <div
+                                  key={index}
+                                  onClick={() => {
+                                    setSelectedRole(role);
+                                    setRoleSearchTerm("");
+                                    setShowRoleDropdown(false);
+                                  }}
+                                  className="px-4 py-3 hover:bg-purple-50 cursor-pointer text-slate-900 border-b border-slate-100 last:border-b-0"
+                                >
+                                  {role}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="px-4 py-3 text-slate-500 italic">
+                                No roles found matching "{roleSearchTerm}"
                               </div>
-                            ))
-                          ) : (
-                            <div className="px-4 py-3 text-slate-500 italic">
-                              No roles found matching "{roleSearchTerm}"
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {selectedRole && (
-                        <div className="mt-2 flex items-center space-x-2">
-                          <div className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                            Selected: {selectedRole}
+                            )}
                           </div>
-                          <button
-                            onClick={() => {
-                              setSelectedRole("");
-                              setRoleSearchTerm("");
-                            }}
-                            className="text-slate-500 hover:text-red-500 text-sm"
-                          >
-                            Clear
-                          </button>
-                        </div>
-                      )}
+                        )}
+                        {selectedRole && (
+                          <div className="mt-2 flex items-center space-x-2">
+                            <div className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                              Selected: {selectedRole}
+                            </div>
+                            <button
+                              onClick={() => {
+                                setSelectedRole("");
+                                setRoleSearchTerm("");
+                              }}
+                              className="text-slate-500 hover:text-red-500 text-sm"
+                            >
+                              Clear
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {/* Experience Level */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-900 mb-3">Experience Level</label>
-                    <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                      <SelectTrigger className="border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 h-12">
-                        <SelectValue placeholder="Select your level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Entry">Entry Level (0-2 years)</SelectItem>
-                        <SelectItem value="Mid">Mid Level (3-5 years)</SelectItem>
-                        <SelectItem value="Senior">Senior Level (6+ years)</SelectItem>
-                        <SelectItem value="Executive">Executive Level</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {/* AI-Powered Features */}
-                  <div className="bg-gradient-to-r from-purple-50 to-teal-50 p-6 rounded-xl border border-purple-100">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Zap className="w-5 h-5 text-purple-600" />
-                      <h3 className="font-semibold text-slate-900">AI-Powered Features:</h3>
+                    {/* Experience Level */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-3">Experience Level</label>
+                      <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                        <SelectTrigger className="border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 h-12">
+                          <SelectValue placeholder="Select your level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Entry">Entry Level (0-2 years)</SelectItem>
+                          <SelectItem value="Mid">Mid Level (3-5 years)</SelectItem>
+                          <SelectItem value="Senior">Senior Level (6+ years)</SelectItem>
+                          <SelectItem value="Executive">Executive Level</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <ul className="text-sm text-slate-700 space-y-2">
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                        <span>AI-generated questions tailored to your role & level</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
-                        <span>Real-time AI feedback on your responses</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-coral-500 rounded-full"></div>
-                        <span>Voice input support for natural conversation</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                        <span>Body language & posture analysis via webcam</span>
-                      </li>
-                    </ul>
-                  </div>
-                  {/* Next Button */}
-                  <Button
-                    onClick={() => setSetupStep(2)}
-                    disabled={!selectedRole || !selectedLevel}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                    size="lg"
-                  >
-                    Next
-                  </Button>
-                </>
+                    {/* AI-Powered Features */}
+                    <div className="bg-gradient-to-r from-purple-50 to-teal-50 p-6 rounded-xl border border-purple-100">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Zap className="w-5 h-5 text-purple-600" />
+                        <h3 className="font-semibold text-slate-900">AI-Powered Features:</h3>
+                      </div>
+                      <ul className="text-sm text-slate-700 space-y-2">
+                        <li className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                          <span>AI-generated questions tailored to your role & level</span>
+                        </li>
+                        <li className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                          <span>Real-time AI feedback on your responses</span>
+                        </li>
+                        <li className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                          <span>Voice input support for natural conversation</span>
+                        </li>
+                        <li className="flex items-center space-x-2">
+                          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                          <span>Body language & posture analysis via webcam</span>
+                        </li>
+                      </ul>
+                    </div>
+                    {/* Next Button */}
+                    <Button
+                      onClick={() => setSetupStep(2)}
+                      disabled={!selectedRole || !selectedLevel}
+                      className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                      size="lg"
+                    >
+                      Next
+                    </Button>
+                  </>
                 )}
 
                 {setupStep === 2 && (
                   <>
-                  {/* Terms & Etiquette Card */}
-                  <Card className="border-slate-200 shadow-lg bg-white/80 backdrop-blur-sm">
-                    <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-slate-100">
-                      <CardTitle className="text-lg text-slate-900 flex items-center space-x-2">
-                        <Shield className="w-5 h-5 text-purple-600" />
-                        <span>Terms & Interview Etiquette</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      <ul className="text-sm text-slate-700 space-y-3 list-disc pl-5">
-                        <li>Ensure you are in a well-lit environment for clear video analysis.</li>
-                        <li>Maintain a good posture: sit upright and face the camera directly.</li>
-                        <li>Dress appropriately as you would for a real interview.</li>
-                        <li>Minimize background noise and distractions.</li>
-                        <li>Be prepared with a notepad and pen if needed.</li>
-                        <li>Keep your mobile phone on silent mode.</li>
-                        <li>Be honest and authentic in your responses.</li>
-                        <li>By starting, you agree to these terms and to being recorded for feedback purposes.</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
-                  {/* Start Interview Button */}
-                  <Button
-                    onClick={startInterview}
-                    className="w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                    size="lg"
-                  >
-                    Start AI Interview
-                    <Play className="ml-2 w-5 h-5" />
-                  </Button>
-                  {/* Optional: Back Button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setSetupStep(1)}
-                    className="w-full mt-2 border-slate-300 text-purple-700 hover:bg-purple-50"
-                  >
-                    Back
-                  </Button>
-                </>
+                    {/* Terms & Etiquette Card */}
+                    <Card className="border border-slate-200 shadow-lg bg-white/80 backdrop-blur-lg mx-auto my-5 max-w-xl">
+                      <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-slate-100 px-6 py-4">
+                        <CardTitle className="text-lg text-slate-900 flex items-center space-x-2">
+                          <Shield className="w-5 h-5 text-purple-600" />
+                          <span>Terms & Interview Etiquette</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <ul className="mt-4 text-sm text-slate-700 space-y-3 list-disc pl-5">
+                          <li>Ensure you are in a well-lit environment for clear video analysis.</li>
+                          <li>Maintain a good posture: sit upright and face the camera directly.</li>
+                          <li>Dress appropriately as you would for a real interview.</li>
+                          <li>Minimize background noise and distractions.</li>
+                          <li>Be prepared with a notepad and pen if needed.</li>
+                          <li>Keep your mobile phone on silent mode.</li>
+                          <li>Be honest and authentic in your responses.</li>
+                          <li>By starting, you agree to these terms and to being recorded for feedback purposes.</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+
+                    {/* Start Interview Button */}
+                    <Button
+                      onClick={startInterview}
+                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                      size="lg"
+                    >
+                      Start AI Interview
+                      <Play className="ml-2 w-5 h-5" />
+                    </Button>
+                    {/* Optional: Back Button */}
+                    <Button
+                      variant="outline"
+                      onClick={() => setSetupStep(1)}
+                      className="w-full mt-2 border-slate-300 text-purple-700 hover:bg-purple-50"
+                    >
+                      Back
+                    </Button>
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -762,9 +767,9 @@ Experience Level: ${level}`;
                   autoPlay
                   muted
                   playsInline
-                  className="w-full h-48 rounded-lg border border-slate-200 bg-slate-100 object-cover"
+                  className="w-full h-48 rounded-lg border border-slate-200 bg-slate-100 object-cover mt-4"
                 />
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between mt-4">
                   <p className="text-xs text-slate-500">
                     Used for posture analysis feedback
                   </p>
@@ -772,11 +777,10 @@ Experience Level: ${level}`;
                     variant="outline"
                     size="sm"
                     onClick={isCameraOn ? stopCamera : startCamera}
-                    className={`transition-all duration-300 ${
-                      isCameraOn
+                    className={`transition-all duration-300 ${isCameraOn
                         ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100"
                         : "border-slate-300 text-slate-600 hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     {isCameraOn ? (
                       <>
@@ -798,22 +802,21 @@ Experience Level: ${level}`;
           {/* Chat Area */}
           <div className="lg:col-span-2">
             <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-                    <Brain className="w-5 h-5 text-white" />
-                  </div>
-                  <CardTitle className="text-lg text-slate-900">AI Interview Session</CardTitle>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
                 </div>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+                <CardTitle className="text-lg text-slate-900">AI Interview Session</CardTitle>
+              </div>
+            </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 mt-4">
                 {messages.map((message) => (
                   <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                     <div
-                      className={`max-w-[80%] p-4 rounded-2xl shadow-sm ${
-                        message.type === "user"
+                      className={`max-w-[80%] p-4 rounded-2xl shadow-sm ${message.type === "user"
                           ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white"
                           : "bg-white border border-slate-200 text-slate-900"
-                      }`}
+                        }`}
                     >
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                       <p className={`text-xs mt-2 ${message.type === "user" ? "text-purple-200" : "text-slate-500"}`}>
@@ -909,13 +912,13 @@ Experience Level: ${level}`;
                   <span>Progress</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-6 mt-4">
                 <div className="space-y-4">                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Questions Completed</span>
-                    <span className="text-slate-900 font-semibold">
-                      {userResponses.length} / {interviewQuestions.length}
-                    </span>
-                  </div>
+                  <span className="text-slate-600">Questions Completed</span>
+                  <span className="text-slate-900 font-semibold">
+                    {userResponses.length} / {interviewQuestions.length}
+                  </span>
+                </div>
                   <div className="w-full bg-slate-200 rounded-full h-3">
                     <div
                       className="bg-gradient-to-r from-teal-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
@@ -936,7 +939,7 @@ Experience Level: ${level}`;
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <ul className="text-sm text-slate-700 space-y-3">
+                <ul className="text-sm text-slate-700 space-y-3 mt-3">
                   <li className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                     <span>Be specific with examples</span>
@@ -946,13 +949,15 @@ Experience Level: ${level}`;
                     <span>Use the STAR method (Situation, Task, Action, Result)</span>
                   </li>
                   <li className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-coral-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                     <span>Take your time to think</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></div>
-                                 <span>Maintain eye contact and confident body posture</span>
-                  </li>                </ul>              </CardContent>
+                    <span>Maintain eye contact and confident body posture</span>
+                  </li>
+                  </ul>    
+                  </CardContent>
             </Card>
           </div>
         </div>

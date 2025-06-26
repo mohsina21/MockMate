@@ -8,6 +8,7 @@ import { auth } from "../Utils/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { askAzureText, askAzureWithImage } from "../Utils/azureOpenAi";
 import InterviewResults from "./InterviewResults";
+
 import {
   Select,
   SelectTrigger,
@@ -496,41 +497,48 @@ Experience Level: ${level}`;
 
   if (!isStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
-        <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link
-              to="/"
-              className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
-            >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="font-medium">Back to Home</span>
-            </Link>
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-4 h-4 text-white" />
-              </div>
-              <h1 className=" text-center text-xl font-bold text-slate-900 ">AI Interview Setup</h1>
-            </div>
-            <div></div>
-          </div>
-        </header>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900">
+       <header className="border-b border-slate-200/60 dark:border-slate-700/60 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm relative">
+  <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+    {/* Left Side */}
+    <Link
+      to="/"
+      className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-purple-700 dark:hover:text-purple-400 transition-colors group"
+    >
+      <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+      <span className="font-medium">Back to Home</span>
+    </Link>
+
+    {/* Center */}
+    <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+      <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+        <Brain className="w-4 h-4 text-white" />
+      </div>
+      <h1 className="text-center text-xl font-bold text-slate-900 dark:text-white">
+        AI Interview Setup
+      </h1>
+    </div>
+
+    {/* Right Side */}
+ 
+  </div>
+</header>
 
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto">
-            <Card className="border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-100">
+            <Card className="border-slate-200 dark:border-slate-700 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+              <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-teal-50 dark:from-purple-900/50 dark:to-teal-900/50 border-b border-slate-100 dark:border-slate-700">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Target className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-slate-900">Setup Your AI Mock Interview</CardTitle>
-                <p className="text-slate-600">AI will generate personalized questions for your role</p>
+                <CardTitle className="text-2xl text-slate-900 dark:text-white">Setup Your AI Mock Interview</CardTitle>
+                <p className="text-slate-600 dark:text-slate-300">AI will generate personalized questions for your role</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 {setupStep === 1 && (
                   <>
                     {/* Role input */}
-                    <div>
+                    <div className="mt-5">
                       <label className="block text-sm font-medium text-slate-900 mb-3">
                         What role are you interviewing for?
                       </label>
@@ -590,7 +598,7 @@ Experience Level: ${level}`;
                     </div>
                     {/* Experience Level */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-3">Experience Level</label>
+                      <label className="block text-sm font-medium text-slate-900 mb-3 ">Experience Level</label>
                       <Select value={selectedLevel} onValueChange={setSelectedLevel}>
                         <SelectTrigger className="border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 h-12">
                           <SelectValue placeholder="Select your level" />
@@ -643,7 +651,7 @@ Experience Level: ${level}`;
                 {setupStep === 2 && (
                   <>
                     {/* Terms & Etiquette Card */}
-                    <Card className="border border-slate-200 shadow-lg bg-white/80 backdrop-blur-lg mx-auto my-5 max-w-xl">
+                    <Card className="border border-slate-200 shadow-lg bg-white/80 backdrop-blur-lg mx-auto mt-7 max-w-xl">
                       <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-slate-100 px-6 py-4">
                         <CardTitle className="text-lg text-slate-900 flex items-center space-x-2">
                           <Shield className="w-5 h-5 text-purple-600" />
@@ -667,11 +675,21 @@ Experience Level: ${level}`;
                     {/* Start Interview Button */}
                     <Button
                       onClick={startInterview}
-                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                      disabled={isLoading}
+                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 h-14 text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                       size="lg"
                     >
-                      Start AI Interview
-                      <Play className="ml-2 w-5 h-5" />
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                          Generating Interview...
+                        </>
+                      ) : (
+                        <>
+                          Start AI Interview
+                          <Play className="ml-2 w-5 h-5" />
+                        </>
+                      )}
                     </Button>
                     {/* Optional: Back Button */}
                     <Button

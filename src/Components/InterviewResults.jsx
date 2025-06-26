@@ -94,24 +94,31 @@ export default function InterviewResults({
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Back to Home</span>
-          </Link>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <Brain className="w-4 h-4 text-white" />
-            </div>
-            <h1 className="text-xl font-bold text-slate-900">Interview Results</h1>
-          </div>
-          <div></div>
-        </div>
-      </header>
+     <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
+  <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+    
+    {/* Left side (Back link) */}
+    <Link
+      to="/"
+      className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
+    >
+      <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+      <span className="font-medium">Back to Home</span>
+    </Link>
+
+    {/* Centered title */}
+    <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+      <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+        <Brain className="w-4 h-4 text-white" />
+      </div>
+      <h1 className="text-xl font-bold text-slate-900">Interview Results</h1>
+    </div>
+
+    {/* Right side (empty for spacing) */}
+    <div className="w-[112px]"></div> {/* same width as back link for balance */}
+    
+  </div>
+</header>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Success Header */}
@@ -165,12 +172,12 @@ export default function InterviewResults({
         {/* Interview Summary */}
         <Card className="border-slate-200 shadow-xl bg-white/90 backdrop-blur-sm mb-8">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
-            <CardTitle className="text-2xl text-slate-900 flex items-center space-x-2">
+            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
               <FileText className="w-6 h-6 text-blue-600" />
               <span>Interview Summary & Assessment</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 mt-5">
             {isLoadingSummary ? (
               <div className="flex items-center justify-center space-x-3 py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -191,12 +198,12 @@ export default function InterviewResults({
         {/* Detailed Feedback */}
         <Card className="border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-slate-200">
-            <CardTitle className="text-2xl text-slate-900 flex items-center space-x-2">
+            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
               <Brain className="w-6 h-6 text-emerald-600" />
               <span>Detailed Interview Feedback</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 mt-5">
             <div className="space-y-8">
               {aiFeedback.map((feedback) => (
                 <div key={feedback.id} className="border border-slate-200 rounded-xl p-6 bg-slate-50/50">
@@ -207,7 +214,7 @@ export default function InterviewResults({
                         <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                           {feedback.questionNumber}
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900">
+                        <h3 className="text-lg font-bold text-slate-900">
                           Question {feedback.questionNumber}
                         </h3>
                         {feedback.isFinal && (
@@ -222,7 +229,7 @@ export default function InterviewResults({
 
                   {/* Your Answer */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center space-x-2">
+                    <h4 className="font-bold text-slate-900 mb-3 flex items-center space-x-2">
                       <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                       <span>Your Response</span>
                     </h4>
@@ -233,7 +240,7 @@ export default function InterviewResults({
 
                   {/* AI Feedback */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center space-x-2">
+                    <h4 className="font-bold text-slate-900 mb-3 flex items-center space-x-2">
                       <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
                       <span>AI Feedback</span>
                     </h4>

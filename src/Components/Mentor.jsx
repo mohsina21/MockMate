@@ -497,13 +497,13 @@ Experience Level: ${level}`;
 
   if (!isStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900">
-       <header className="border-b border-slate-200/60 dark:border-slate-700/60 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm relative">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
+       <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
   <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
     {/* Left Side */}
     <Link
       to="/"
-      className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-purple-700 dark:hover:text-purple-400 transition-colors group"
+      className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
     >
       <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
       <span className="font-medium">Back to Home</span>
@@ -514,7 +514,7 @@ Experience Level: ${level}`;
       <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
         <Brain className="w-4 h-4 text-white" />
       </div>
-      <h1 className="text-center text-xl font-bold text-slate-900 dark:text-white">
+      <h1 className="text-center text-xl font-bold text-slate-900">
         AI Interview Setup
       </h1>
     </div>
@@ -526,13 +526,13 @@ Experience Level: ${level}`;
 
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto">
-            <Card className="border-slate-200 dark:border-slate-700 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
-              <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-teal-50 dark:from-purple-900/50 dark:to-teal-900/50 border-b border-slate-100 dark:border-slate-700">
+            <Card className="border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-100">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Target className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-slate-900 dark:text-white">Setup Your AI Mock Interview</CardTitle>
-                <p className="text-slate-600 dark:text-slate-300">AI will generate personalized questions for your role</p>
+                <CardTitle className="text-2xl text-slate-900">Setup Your AI Mock Interview</CardTitle>
+                <p className="text-slate-600">AI will generate personalized questions for your role</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 {setupStep === 1 && (

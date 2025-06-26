@@ -64,13 +64,15 @@ export default function InterviewResults({
 
         Keep the summary professional, constructive, and encouraging. Focus on actionable insights that will help the candidate improve their interview skills. Limit to 300-400 words. Please provide a clean response without any markdown formatting like ** or * or # signs.
         `;        const summary = await askAzureText(summaryPrompt);
-        // Clean markdown formatting from the summary
+        // Clean markdown formatting from the summary and bold main section headings
         const cleanSummary = summary
           .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold **text**
           .replace(/\*(.*?)\*/g, '$1') // Remove italic *text*
           .replace(/#{1,6}\s*(.*?)(\n|$)/g, '$1$2') // Remove headers # ## ###
           .replace(/^\s*[-*+]\s+/gm, '• ') // Convert bullet points to simple bullets
-          .replace(/^\s*\d+\.\s+/gm, '• '); // Convert numbered lists to bullets
+          .replace(/^\s*\d+\.\s+/gm, '• ') // Convert numbered lists to bullets
+          // Bold main section headings
+          .replace(/\b(Overall Performance Assessment|Key Strengths|Areas for Improvement|Communication Skills|Technical Competency|Confidence and Presentation|Final Recommendation|Next Steps)(\s*:)/gi, '<strong>$1$2</strong>');
         setInterviewSummary(cleanSummary);
       } catch (error) {
         console.error("Error generating interview summary:", error);
@@ -186,9 +188,10 @@ export default function InterviewResults({
             ) : (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
                 <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
-                    {interviewSummary}
-                  </p>
+                  <div 
+                    className="text-slate-800 leading-relaxed text-lg whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ __html: interviewSummary }}
+                  />
                 </div>
               </div>
             )}

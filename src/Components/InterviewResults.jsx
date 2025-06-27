@@ -64,13 +64,15 @@ export default function InterviewResults({
 
         Keep the summary professional, constructive, and encouraging. Focus on actionable insights that will help the candidate improve their interview skills. Limit to 300-400 words. Please provide a clean response without any markdown formatting like ** or * or # signs.
         `;        const summary = await askAzureText(summaryPrompt);
-        // Clean markdown formatting from the summary
+        // Clean markdown formatting from the summary and bold main section headings
         const cleanSummary = summary
           .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold **text**
           .replace(/\*(.*?)\*/g, '$1') // Remove italic *text*
           .replace(/#{1,6}\s*(.*?)(\n|$)/g, '$1$2') // Remove headers # ## ###
           .replace(/^\s*[-*+]\s+/gm, '• ') // Convert bullet points to simple bullets
-          .replace(/^\s*\d+\.\s+/gm, '• '); // Convert numbered lists to bullets
+          .replace(/^\s*\d+\.\s+/gm, '• ') // Convert numbered lists to bullets
+          // Bold main section headings
+          .replace(/\b(Overall Performance Assessment|Key Strengths|Areas for Improvement|Communication Skills|Technical Competency|Confidence and Presentation|Final Recommendation|Next Steps)(\s*:)/gi, '<strong>$1$2</strong>');
         setInterviewSummary(cleanSummary);
       } catch (error) {
         console.error("Error generating interview summary:", error);
@@ -94,24 +96,31 @@ export default function InterviewResults({
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Back to Home</span>
-          </Link>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <Brain className="w-4 h-4 text-white" />
-            </div>
-            <h1 className="text-xl font-bold text-slate-900">Interview Results</h1>
-          </div>
-          <div></div>
-        </div>
-      </header>
+     <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
+  <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+    
+    {/* Left side (Back link) */}
+    <Link
+      to="/"
+      className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
+    >
+      <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+      <span className="font-medium">Back to Home</span>
+    </Link>
+
+    {/* Centered title */}
+    <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+      <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+        <Brain className="w-4 h-4 text-white" />
+      </div>
+      <h1 className="text-xl font-bold text-slate-900">Interview Results</h1>
+    </div>
+
+    {/* Right side (empty for spacing) */}
+    <div className="w-[112px]"></div> {/* same width as back link for balance */}
+    
+  </div>
+</header>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Success Header */}
@@ -131,7 +140,7 @@ export default function InterviewResults({
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 text-center mt-5">
               <Clock className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
               <div className="text-2xl font-bold text-emerald-800">{formatTime(timer - timeLeft)}</div>
               <div className="text-sm text-emerald-600">Duration</div>
@@ -139,7 +148,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-teal-200 bg-gradient-to-r from-teal-50 to-blue-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 mt-5 text-center">
               <Users className="w-8 h-8 mx-auto mb-2 text-teal-600" />
               <div className="text-2xl font-bold text-teal-800">{userResponses.length}</div>
               <div className="text-sm text-teal-600">Questions Answered</div>
@@ -147,7 +156,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-5 mt-5 text-center">
               <Trophy className="w-8 h-8 mx-auto mb-2 text-purple-600" />
               <div className="text-2xl font-bold text-purple-800">{Math.round((userResponses.length / interviewQuestions.length) * 100)}%</div>
               <div className="text-sm text-purple-600">Completion Rate</div>
@@ -155,7 +164,7 @@ export default function InterviewResults({
           </Card>
           
           <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-red-50">
-            <CardContent className="p-6 text-center">
+            <CardContent className="pt-6 text-center">
               <Star className="w-8 h-8 mx-auto mb-2 text-orange-600" />
               <div className="text-2xl font-bold text-orange-800">{aiFeedback.filter(f => f.cameraFeedback).length}</div>
               <div className="text-sm text-orange-600">Camera Analyses</div>
@@ -165,12 +174,12 @@ export default function InterviewResults({
         {/* Interview Summary */}
         <Card className="border-slate-200 shadow-xl bg-white/90 backdrop-blur-sm mb-8">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
-            <CardTitle className="text-2xl text-slate-900 flex items-center space-x-2">
+            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
               <FileText className="w-6 h-6 text-blue-600" />
               <span>Interview Summary & Assessment</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 mt-5">
             {isLoadingSummary ? (
               <div className="flex items-center justify-center space-x-3 py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -179,9 +188,10 @@ export default function InterviewResults({
             ) : (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
                 <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-800 leading-relaxed text-lg whitespace-pre-line">
-                    {interviewSummary}
-                  </p>
+                  <div 
+                    className="text-slate-800 leading-relaxed text-lg whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ __html: interviewSummary }}
+                  />
                 </div>
               </div>
             )}
@@ -191,12 +201,12 @@ export default function InterviewResults({
         {/* Detailed Feedback */}
         <Card className="border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-slate-200">
-            <CardTitle className="text-2xl text-slate-900 flex items-center space-x-2">
+            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
               <Brain className="w-6 h-6 text-emerald-600" />
               <span>Detailed Interview Feedback</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 mt-5">
             <div className="space-y-8">
               {aiFeedback.map((feedback) => (
                 <div key={feedback.id} className="border border-slate-200 rounded-xl p-6 bg-slate-50/50">
@@ -207,7 +217,7 @@ export default function InterviewResults({
                         <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                           {feedback.questionNumber}
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900">
+                        <h3 className="text-lg font-bold text-slate-900">
                           Question {feedback.questionNumber}
                         </h3>
                         {feedback.isFinal && (
@@ -222,7 +232,7 @@ export default function InterviewResults({
 
                   {/* Your Answer */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center space-x-2">
+                    <h4 className="font-bold text-slate-900 mb-3 flex items-center space-x-2">
                       <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                       <span>Your Response</span>
                     </h4>
@@ -233,7 +243,7 @@ export default function InterviewResults({
 
                   {/* AI Feedback */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center space-x-2">
+                    <h4 className="font-bold text-slate-900 mb-3 flex items-center space-x-2">
                       <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
                       <span>AI Feedback</span>
                     </h4>

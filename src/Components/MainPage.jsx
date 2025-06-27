@@ -202,20 +202,20 @@ export default function MainPage() {
               Watch Demo
             </Button> */}
           </div>
-          <div className="mt-12 flex items-center justify-center space-x-8 text-slate-600">
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
+          {/* <div className="mt-12 flex items-center justify-center space-x-8 text-slate-600">
+            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
               {/* <Users className="w-5 h-5 text-teal-600" /> */}
               {/* <span className="text-sm font-medium">10,000+ Users</span> */}
-            </div>
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
+            {/* </div>
+            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
               {/* <Star className="w-5 h-5 text-coral-500 fill-current" /> */}
               {/* <span className="text-sm font-medium">4.9/5 Rating</span> */}
-            </div>
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm">
+            {/* </div>
+            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
               {/* <Trophy className="w-5 h-5 text-emerald-600" /> */}
               {/* <span className="text-sm font-medium">85% Success Rate</span> */}
-            </div>
-          </div>
+            {/* </div> */}
+          {/* </div> */}
         </div>
       </section>
 
@@ -285,7 +285,7 @@ export default function MainPage() {
                     <motion.div 
                       className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300`}
                       whileHover={{ 
-                        rotate: [0, -10, 10, -10, 0],
+                        // rotate: [0, -10, 10, -10, 0],
                         scale: 1.1 
                       }}
                       transition={{ duration: 0.5 }}
@@ -410,7 +410,7 @@ export default function MainPage() {
               <span>Success Stories</span>
             </motion.div>
             <h2 className="text-4xl font-bold text-slate-900 mb-4">Success Stories</h2>
-            <p className="text-xl text-slate-600">See how InterviewAI helped others land their dream jobs</p>
+            <p className="text-xl text-slate-600">See how MockMate helped others land their dream jobs</p>
           </motion.div>
 
           <motion.div 
@@ -422,17 +422,19 @@ export default function MainPage() {
           >
             {[
               {
-                name: "Sarah Martinez",
-                role: "Software Engineer at Google",
-                initials: "SM",
+                name: "Yash Srivastava",
+                role: "Academic Trainne at KPMG",
+                avatar: "https://media.licdn.com/dms/image/v2/D5603AQGSYFegbRYc9Q/profile-displayphoto-shrink_400_400/B56ZXtjfKtGoAg-/0/1743447258345?e=1756339200&v=beta&t=-Aa_jThoOM7LDemxfcgmylyP7Aw1tv_jVQBS-OID--s",
+                linkedin: "https://www.linkedin.com/in/yashsrivasta7a/",
                 gradient: "from-purple-500 to-teal-500",
-                quote: "InterviewAI helped me prepare for my software engineering interviews. The feedback was incredibly detailed and helped me identify areas I never knew I needed to work on.",
-                hoverColor: "hover:border-purple-200"
+                quote: "MockMate helped me prepare for my software engineering interviews. The feedback was incredibly detailed and helped me identify areas I never knew I needed to work on.",
+                hoverColor: "hover:border-purple-400"
               },
               {
-                name: "James Davis",
-                role: "Marketing Manager at Microsoft",
-                initials: "JD",
+                name: "Roshan Rawat",
+                role: "Software Enginner at Google",
+                avatar: "https://media.licdn.com/dms/image/v2/D5603AQHmEHb4_-AsZA/profile-displayphoto-shrink_400_400/B56Zb3MqJ6GsAg-/0/1747904013459?e=1756339200&v=beta&t=pBsUtZAn26hxnTLS_CUM4uBQQHKF7pJ3fjdTamNja5Y",
+                linkedin: "https://www.linkedin.com/in/roshan-rawat-493091255/",
                 gradient: "from-teal-500 to-emerald-500",
                 quote: "As a recent graduate, I was nervous about interviews. This platform gave me the confidence and skills I needed to succeed in my job search.",
                 hoverColor: "hover:border-teal-200"
@@ -454,7 +456,7 @@ export default function MainPage() {
                           whileInView={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3, delay: i * 0.1 }}
                         >
-                          <Star className="w-5 h-5 text-coral-500 fill-current" />
+                          <Star className="w-5 h-5 text-yellow-500 fill-current" />
                         </motion.div>
                       ))}
                     </motion.div>
@@ -463,14 +465,30 @@ export default function MainPage() {
                     </p>
                     <div className="flex items-center">
                       <motion.div 
-                        className={`w-12 h-12 bg-gradient-to-br ${testimonial.gradient} rounded-full flex items-center justify-center mr-4`}
+                        className="w-12 h-12 rounded-full overflow-hidden mr-4 ring-2 ring-slate-200 hover:ring-purple-300 transition-all duration-300"
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <span className="text-white font-semibold">{testimonial.initials}</span>
+                        <img 
+                          src={testimonial.avatar} 
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover"
+                        />
                       </motion.div>
-                      <div>
-                        <p className="font-semibold text-slate-900">{testimonial.name}</p>
+                      <div className="flex-grow">
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-slate-900">{testimonial.name}</p>
+                          <a
+                            href={testimonial.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd" />
+                            </svg>
+                          </a>
+                        </div>
                         <p className="text-sm text-slate-600">{testimonial.role}</p>
                       </div>
                     </div>
@@ -510,19 +528,19 @@ export default function MainPage() {
   <div className="mt-1">
     Made by{" "}
     <a
-      href="https://www.linkedin.com/in/mohsinaparveen"
+      href="https://www.linkedin.com/in/mohsina-parveen-577367203/"
       target="_blank"
       rel="noopener noreferrer"
-      className="underline hover:text-purple-600 font-semibold transition-colors duration-200"
+      className=" hover:text-purple-600 font-semibold transition-colors duration-200"
     >
-      Mohsina Parveen
+      Mohsina Parveen 
     </a>
-    {" "}and{" "}
+    {" "}&{" "}
     <a
-      href="https://www.linkedin.com/in/ronitbali"
+      href="https://www.linkedin.com/in/ronit-bali-xe/"
       target="_blank"
       rel="noopener noreferrer"
-      className="underline hover:text-purple-600 font-semibold transition-colors duration-200"
+      className=" hover:text-purple-600 font-semibold transition-colors duration-200"
     >
       Ronit Bali
     </a>

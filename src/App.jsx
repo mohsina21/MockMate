@@ -8,7 +8,7 @@ import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 
 function App() {
   return (
-    <div className="relative w-full h-full min-h-screen overflow-x-hidden bg-black">
+    <div className="relative w-full h-full min-h-screen overflow-x-hidden bg-white">
       {/* Squares always in the background */}
       
    

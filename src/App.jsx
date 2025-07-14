@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainPage from "./Components/MainPage.jsx";
+import ScrollToTop from "./Components/UI/ScrollToTop.jsx";
 import AboutSection from "./Components/AboutSection.jsx";
 import "./index.css";
 import Mentor from "./Components/Mentor.jsx";
@@ -13,6 +14,7 @@ function App() {
       
    
       <Router>
+           <ScrollToTop />
         <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<MainPage />} />

@@ -19,43 +19,31 @@ import {
 import { Textarea } from "./textarea";
 
 export default function Mentor() {
-  // All available roles for searching
   const allRoles = [
-    // Software Development & Engineering
     "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
     "Mobile App Developer", "Game Developer", "DevOps Engineer", "Site Reliability Engineer (SRE)",
     "Software Architect", "Technical Lead",
 
-    // Data & Analytics
     "Data Scientist", "Data Engineer", "Data Analyst", "Machine Learning Engineer",
     "AI Engineer", "Business Intelligence Analyst",
 
-    // Cloud & Infrastructure
     "Cloud Engineer", "Cloud Architect", "AWS Solutions Architect", "Azure Solutions Architect",
     "Systems Administrator", "Network Engineer", "Infrastructure Engineer",
 
-    // Cybersecurity
     "Cybersecurity Analyst", "Security Engineer", "Penetration Tester", "Information Security Manager",
 
-    // Quality Assurance & Testing
     "QA Engineer", "Test Automation Engineer", "Performance Test Engineer",
 
-    // Design & User Experience
     "UX/UI Designer", "UX Designer", "UI Designer", "Product Designer",
 
-    // Product & Project Management
     "Product Manager", "Technical Product Manager", "Project Manager", "Scrum Master", "Agile Coach",
 
-    // Business & Analysis
     "Business Analyst", "Systems Analyst", "IT Business Analyst",
 
-    // Database & Backend Systems
     "Database Administrator (DBA)", "Database Developer", "API Developer",
 
-    // Sales & Marketing (Tech)
     "Technical Sales Engineer", "Solutions Engineer", "Marketing Manager", "Sales Representative",
 
-    // Consulting & Leadership
     "Management Consultant", "IT Consultant", "Technology Consultant", "Engineering Manager",
     "Chief Technology Officer (CTO)", "IT Director"
   ];
@@ -84,12 +72,10 @@ export default function Mentor() {
   const streamRef = useRef(null);
   const roleDropdownRef = useRef(null);
 
-  // Filter roles based on search term
   const filteredRoles = allRoles.filter(role =>
     role.toLowerCase().includes(roleSearchTerm.toLowerCase())
   );
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target)) {
@@ -111,7 +97,6 @@ export default function Mentor() {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize camera when component mounts
   useEffect(() => {
     startCamera();
     return () => {
@@ -134,7 +119,6 @@ export default function Mentor() {
         streamRef.current = stream;
         setIsCameraOn(true);
 
-        // Ensure video plays
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play().catch(err => {
             console.error("Play error:", err);
@@ -174,7 +158,6 @@ export default function Mentor() {
     } return null;
   };
 
-  // Generate AI questions based on role and level
   const generateInterviewQuestions = async (role, level, numQuestions = 10) => {
     try {
       const prompt = `You are an experienced HR interviewer. Generate exactly ${numQuestions} interview questions for a ${level} level ${role} position. 
@@ -200,7 +183,6 @@ Experience Level: ${level}`;
       const response = await askAzureText(prompt);
       console.log("Azure response:", response);
 
-      // Parse the response to extract questions
       const questions = response
         .split('\n')
         .map(q => q.trim())
@@ -209,12 +191,10 @@ Experience Level: ${level}`;
 
       console.log("Parsed questions:", questions);
 
-      // If we got good questions, return them
       if (questions.length >= 3) {
         return questions;
       }
 
-      // Fallback: Use default questions if AI response wasn't good
       console.log("Using fallback questions");
       return questions.length > 0 ? questions : [
         "Tell me about yourself and your background.",
@@ -226,7 +206,6 @@ Experience Level: ${level}`;
       ];
     } catch (error) {
       console.error("Error generating questions:", error);
-      // Return default questions as fallback
       return [
         "Tell me about yourself and your background.",
         "Why are you interested in this position?",
@@ -255,7 +234,6 @@ Experience Level: ${level}`;
     setIsLoading(false);
   };
 
-  // Voice-to-text handler
   const handleVoiceInput = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -313,14 +291,12 @@ Experience Level: ${level}`;
       timestamp: new Date(),
     };
 
-    // Store user response and show in chat
     setUserResponses((prev) => [...prev, userMessage]);
     setMessages((prev) => [...prev, userMessage]);
     setCurrentInput("");
     setIsLoading(true);
 
     try {
-      // Generate AI response based on the answer
       let botResponse = "";
       let nextQuestionOnly = "";
 
@@ -328,10 +304,8 @@ Experience Level: ${level}`;
         const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Please provide a clean response without any markdown formatting like ** or *.`;
 
         botResponse = await askAzureText(feedbackPrompt);
-        // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
 
-        // Store feedback for end display
         setAiFeedback((prev) => [...prev, {
           id: Date.now().toString(),
           questionNumber: currentQuestion + 1,
@@ -343,16 +317,13 @@ Experience Level: ${level}`;
 
         setCurrentQuestion((prev) => prev + 1);
 
-        // Only show the next question in chat
         nextQuestionOnly = `Next question: ${interviewQuestions[currentQuestion + 1]}`;
       } else {
         const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging. Please provide a clean response without any markdown formatting like ** or *.`;
 
         botResponse = await askAzureText(finalFeedbackPrompt);
-        // Clean the response from markdown formatting
         botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
 
-        // Store final feedback
         setAiFeedback((prev) => [...prev, {
           id: Date.now().toString(),
           questionNumber: currentQuestion + 1,
@@ -364,14 +335,12 @@ Experience Level: ${level}`;
         }]);
 
         setIsComplete(true);
-        // Show results page after a short delay
         setTimeout(() => {
           setShowResults(true);
         }, 2000);
         nextQuestionOnly = "Thank you for completing the interview! Loading your detailed results...";
       }
 
-      // Only add the next question or completion message to chat
       const botMessage = {
         id: (Date.now() + 1).toString(),
         type: "bot",
@@ -379,7 +348,7 @@ Experience Level: ${level}`;
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, botMessage]);// Capture image for posture analysis if video is available
+      setMessages((prev) => [...prev, botMessage]);
       if (videoRef.current && videoRef.current.videoWidth > 0) {
         const img = captureImage();
         if (img) {
@@ -389,10 +358,8 @@ Experience Level: ${level}`;
               img
             );
 
-            // Clean the response from markdown formatting
             const cleanImageFeedback = imageFeedback.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
 
-            // Store camera feedback for end display (don't add to chat)
             setAiFeedback((prev) => {
               const updatedFeedback = [...prev];
               const lastIndex = updatedFeedback.length - 1;
@@ -444,20 +411,18 @@ Experience Level: ${level}`;
     setShowResults(false);
   };
 
-  // Set timer based on number of questions (1 min per question as example)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
   }, []);
   useEffect(() => {
     if (isStarted && interviewQuestions.length > 0) {
-      const minutes = 15; // 15 minutes total for the interview
+      const minutes = 15;
       setTimer(minutes * 60);
       setTimeLeft(minutes * 60);
     }
   }, [isStarted, interviewQuestions.length]);
 
-  // Countdown logic
   useEffect(() => {
     if (!isStarted || isComplete || timeLeft === null) return;
     if (timeLeft <= 0) {
@@ -470,7 +435,6 @@ Experience Level: ${level}`;
     return () => clearInterval(interval);
   }, [isStarted, isComplete, timeLeft]);
 
-  // Format time as MM:SS
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60)
       .toString()
@@ -479,7 +443,6 @@ Experience Level: ${level}`;
     return `${m}:${s}`;
   };
 
-  // Show results page if interview is complete
   if (showResults) {
     return (
       <InterviewResults
@@ -500,7 +463,6 @@ Experience Level: ${level}`;
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
        <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
   <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
-    {/* Left Side */}
     <Link
       to="/"
       className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
@@ -509,7 +471,6 @@ Experience Level: ${level}`;
       <span className="font-medium">Back to Home</span>
     </Link>
 
-    {/* Center */}
     <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
       <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
         <Brain className="w-4 h-4 text-white" />
@@ -519,8 +480,8 @@ Experience Level: ${level}`;
       </h1>
     </div>
 
-    {/* Right Side */}
- 
+    <div className="flex items-center gap-4">
+    </div>
   </div>
 </header>
 
@@ -537,7 +498,6 @@ Experience Level: ${level}`;
               <CardContent className="space-y-6 p-8">
                 {setupStep === 1 && (
                   <>
-                    {/* Role input */}
                     <div className="mt-5">
                       <label className="block text-sm font-medium text-slate-900 mb-3">
                         What role are you interviewing for?
@@ -596,7 +556,6 @@ Experience Level: ${level}`;
                         )}
                       </div>
                     </div>
-                    {/* Experience Level */}
                     <div>
                       <label className="block text-sm font-medium text-slate-900 mb-3 ">Experience Level</label>
                       <Select value={selectedLevel} onValueChange={setSelectedLevel}>
@@ -611,7 +570,6 @@ Experience Level: ${level}`;
                         </SelectContent>
                       </Select>
                     </div>
-                    {/* AI-Powered Features */}
                     <div className="bg-gradient-to-r from-purple-50 to-teal-50 p-6 rounded-xl border border-purple-100">
                       <div className="flex items-center space-x-2 mb-3">
                         <Zap className="w-5 h-5 text-purple-600" />
@@ -636,7 +594,6 @@ Experience Level: ${level}`;
                         </li>
                       </ul>
                     </div>
-                    {/* Next Button */}
                     <Button
                       onClick={() => setSetupStep(2)}
                       disabled={!selectedRole || !selectedLevel}
@@ -650,7 +607,6 @@ Experience Level: ${level}`;
 
                 {setupStep === 2 && (
                   <>
-                    {/* Terms & Etiquette Card */}
                     <Card className="border border-slate-200 shadow-lg bg-white/80 backdrop-blur-lg mx-auto mt-7 max-w-xl">
                       <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-slate-100 px-6 py-4">
                         <CardTitle className="text-lg text-slate-900 flex items-center space-x-2">
@@ -672,7 +628,6 @@ Experience Level: ${level}`;
                       </CardContent>
                     </Card>
 
-                    {/* Start Interview Button */}
                     <Button
                       onClick={startInterview}
                       disabled={isLoading}
@@ -691,7 +646,6 @@ Experience Level: ${level}`;
                         </>
                       )}
                     </Button>
-                    {/* Optional: Back Button */}
                     <Button
                       variant="outline"
                       onClick={() => setSetupStep(1)}
@@ -771,7 +725,6 @@ Experience Level: ${level}`;
 
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Webcam Feed */}
           <div className="lg:col-span-1">
             <Card className="border-slate-200 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-100">
@@ -817,7 +770,6 @@ Experience Level: ${level}`;
             </Card>
           </div>
 
-          {/* Chat Area */}
           <div className="lg:col-span-2">
             <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
               <div className="flex items-center space-x-2">
@@ -921,7 +873,6 @@ Experience Level: ${level}`;
             </Card>
           </div>
 
-          {/* Progress & Tips */}
           <div className="space-y-6">
             <Card className="border-slate-200 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-slate-100">

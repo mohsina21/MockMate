@@ -39,7 +39,6 @@ export default function MainPage() {
     }
   };
   
-  // Animation variants
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
     animate: { opacity: 1, y: 0 },
@@ -95,7 +94,6 @@ export default function MainPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
-      {/* Header */}
       <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm ">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -146,7 +144,6 @@ export default function MainPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-teal-600/5 rounded-full blur-3xl transform -translate-y-1/2"></div>
         <div className="container mx-auto text-center max-w-4xl relative">
@@ -183,44 +180,15 @@ export default function MainPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/interview">
-              {/* <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Start Free Interview
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button> */}
               <Button1 >
                  Start Free Interview
               </Button1>
             </Link>
-            {/* <Button
-              size="lg"
-              variant="outline"
-              className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-4 text-lg shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              Watch Demo
-            </Button> */}
           </div>
-          {/* <div className="mt-12 flex items-center justify-center space-x-8 text-slate-600">
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
-              {/* <Users className="w-5 h-5 text-teal-600" /> */}
-              {/* <span className="text-sm font-medium">10,000+ Users</span> */}
-            {/* </div>
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
-              {/* <Star className="w-5 h-5 text-coral-500 fill-current" /> */}
-              {/* <span className="text-sm font-medium">4.9/5 Rating</span> */}
-            {/* </div>
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-full shadow-sm"> */}
-              {/* <Trophy className="w-5 h-5 text-emerald-600" /> */}
-              {/* <span className="text-sm font-medium">85% Success Rate</span> */}
-            {/* </div> */}
-          {/* </div> */}
         </div>
       </section>
 
-      {/* Features Section */}
-    <motion.section 
+      <motion.section 
         id="features" 
         className="py-20 px-4 bg-white"
         initial={{ opacity: 0 }}
@@ -285,7 +253,6 @@ export default function MainPage() {
                     <motion.div 
                       className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300`}
                       whileHover={{ 
-                        // rotate: [0, -10, 10, -10, 0],
                         scale: 1.1 
                       }}
                       transition={{ duration: 0.5 }}
@@ -304,7 +271,6 @@ export default function MainPage() {
         </div>
       </motion.section>
 
-      {/* How it Works */}
       <motion.section 
         id="how-it-works" 
         className="py-20 px-4 bg-gradient-to-br from-slate-50 to-purple-50"
@@ -385,8 +351,7 @@ export default function MainPage() {
         </div>
       </motion.section>
 
-      {/* Testimonials */}
-       <motion.section 
+      <motion.section 
         id="testimonials" 
         className="py-20 px-4 bg-white"
         initial={{ opacity: 0 }}
@@ -433,7 +398,7 @@ export default function MainPage() {
               {
                 name: "Roshan Rawat",
                 role: "Software Enginner at Google",
-                avatar: "https://media.licdn.com/dms/image/v2/D5603AQHmEHb4_-AsZA/profile-displayphoto-shrink_400_400/B56Zb3MqJ6GsAg-/0/1747904013459?e=1756339200&v=beta&t=pBsUtZAn26hxnTLS_CUM4uBQQHKF7pJ3fjdTamNja5Y",
+                avatar: "https://media.licdn.com/dms/image/v2/D5603AQH85W6IWTxj8g/profile-displayphoto-scale_400_400/B56ZftSp1pGoAk-/0/1752032781492?e=1758153600&v=beta&t=g8R4zByJGuuMW3L_KDKcnTQZ-XHaJj5CMzhImamAcOQ",
                 linkedin: "https://www.linkedin.com/in/roshan-rawat-493091255/",
                 gradient: "from-teal-500 to-emerald-500",
                 quote: "As a recent graduate, I was nervous about interviews. This platform gave me the confidence and skills I needed to succeed in my job search.",
@@ -500,7 +465,6 @@ export default function MainPage() {
         </div>
       </motion.section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-purple-600 via-purple-700 to-teal-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-teal-600/20 backdrop-blur-sm"></div>
         <div className="container mx-auto text-center relative">
@@ -520,7 +484,6 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-purple-900 text-white py-6 px-4 text-center text-sm">
   <div>
     © 2025 All rights reserved.

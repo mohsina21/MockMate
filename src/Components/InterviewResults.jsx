@@ -413,7 +413,7 @@ export default function InterviewResults({
                 Download Summary
               </Button>
               
-              <Link to="/">
+              npm install jspdf              <Link to="/">
                 <Button
                   variant="outline"
                   className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-3 shadow-sm hover:shadow-md transition-all duration-300"

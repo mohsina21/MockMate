@@ -49,9 +49,18 @@ const Auth = ({ onAuthSuccess }) => {
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      const result = await signInWithPopup(auth, provider);
+      if (result.user && onAuthSuccess) {
+        onAuthSuccess();
+      }
     } catch (err) {
-      alert(err.message);
+      console.error("Google Sign In Error:", err);
+      alert(err.code === 'auth/popup-blocked' 
+        ? 'Please allow popups for this site to use Google Sign In' 
+        : 'Failed to sign in with Google. Please try again.');
     }
   };
 

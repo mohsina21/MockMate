@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../Utils/Firebase";
+import { auth, googleProvider } from "../Utils/Firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 import { Button } from "./button";
@@ -48,11 +47,7 @@ const Auth = ({ onAuthSuccess }) => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, googleProvider);
       if (result.user && onAuthSuccess) {
         onAuthSuccess();
       }

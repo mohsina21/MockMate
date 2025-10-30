@@ -7,7 +7,7 @@ const deploymentName = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT_NAME;
 
 const client = new OpenAIClient(endpoint, new AzureKeyCredential(apiKey));
 
-// 🧠 Text only
+
 export async function askAzureText(prompt) {
   const response = await client.getChatCompletions(deploymentName, [
     { role: "user", content: prompt }

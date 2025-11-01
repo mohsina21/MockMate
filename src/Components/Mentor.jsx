@@ -2,7 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./button";
 import { Badge } from "./badge";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
-import { Brain, ArrowLeft, Video, VideoOff, Zap, Target, RotateCcw, Send, Mic, MicOff, CheckCircle, Clock, Users, Play, Camera, Shield } from "lucide-react";
+import {
+  Brain,
+  ArrowLeft,
+  Video,
+  VideoOff,
+  Zap,
+  Target,
+  RotateCcw,
+  Send,
+  Mic,
+  MicOff,
+  CheckCircle,
+  Clock,
+  Users,
+  Play,
+  Camera,
+  Shield,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { auth } from "../Utils/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -14,50 +31,105 @@ import {
   SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectValue
+  SelectValue,
 } from "./select";
 import { Textarea } from "./textarea";
 
+const nextQuestionStarters = [
+  "Alright, here’s the next one:",
+  "Let's keep going — next question:",
+  "Great! Moving on:",
+  "Nice response. Try this next one:",
+  "Okay, here’s another question for you:",
+  "You're doing well — answer this:",
+  "Let’s continue — next up:",
+  "Cool, now think about this one:",
+  "Appreciate the answer! Next question:",
+  "Great insight — try this next:",
+  "Awesome — here’s the next question:",
+];
+
 export default function Mentor() {
   const allRoles = [
-    "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
-    "Mobile App Developer", "Game Developer", "DevOps Engineer", "Site Reliability Engineer (SRE)",
-    "Software Architect", "Technical Lead",
+    "Software Engineer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Mobile App Developer",
+    "Game Developer",
+    "DevOps Engineer",
+    "Site Reliability Engineer (SRE)",
+    "Software Architect",
+    "Technical Lead",
 
-    "Data Scientist", "Data Engineer", "Data Analyst", "Machine Learning Engineer",
-    "AI Engineer", "Business Intelligence Analyst",
+    "Data Scientist",
+    "Data Engineer",
+    "Data Analyst",
+    "Machine Learning Engineer",
+    "AI Engineer",
+    "Business Intelligence Analyst",
 
-    "Cloud Engineer", "Cloud Architect", "AWS Solutions Architect", "Azure Solutions Architect",
-    "Systems Administrator", "Network Engineer", "Infrastructure Engineer",
+    "Cloud Engineer",
+    "Cloud Architect",
+    "AWS Solutions Architect",
+    "Azure Solutions Architect",
+    "Systems Administrator",
+    "Network Engineer",
+    "Infrastructure Engineer",
 
-    "Cybersecurity Analyst", "Security Engineer", "Penetration Tester", "Information Security Manager",
+    "Cybersecurity Analyst",
+    "Security Engineer",
+    "Penetration Tester",
+    "Information Security Manager",
 
-    "QA Engineer", "Test Automation Engineer", "Performance Test Engineer",
+    "QA Engineer",
+    "Test Automation Engineer",
+    "Performance Test Engineer",
 
-    "UX/UI Designer", "UX Designer", "UI Designer", "Product Designer",
+    "UX/UI Designer",
+    "UX Designer",
+    "UI Designer",
+    "Product Designer",
 
-    "Product Manager", "Technical Product Manager", "Project Manager", "Scrum Master", "Agile Coach",
+    "Product Manager",
+    "Technical Product Manager",
+    "Project Manager",
+    "Scrum Master",
+    "Agile Coach",
 
-    "Business Analyst", "Systems Analyst", "IT Business Analyst",
+    "Business Analyst",
+    "Systems Analyst",
+    "IT Business Analyst",
 
-    "Database Administrator (DBA)", "Database Developer", "API Developer",
+    "Database Administrator (DBA)",
+    "Database Developer",
+    "API Developer",
 
-    "Technical Sales Engineer", "Solutions Engineer", "Marketing Manager", "Sales Representative",
+    "Technical Sales Engineer",
+    "Solutions Engineer",
+    "Marketing Manager",
+    "Sales Representative",
 
-    "Management Consultant", "IT Consultant", "Technology Consultant", "Engineering Manager",
-    "Chief Technology Officer (CTO)", "IT Director"
+    "Management Consultant",
+    "IT Consultant",
+    "Technology Consultant",
+    "Engineering Manager",
+    "Chief Technology Officer (CTO)",
+    "IT Director",
   ];
 
   const [isStarted, setIsStarted] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [currentInput, setCurrentInput] = useState(""); const [selectedRole, setSelectedRole] = useState("");
+  const [currentInput, setCurrentInput] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [roleSearchTerm, setRoleSearchTerm] = useState("");
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [isComplete, setIsComplete] = useState(false); const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [interviewQuestions, setInterviewQuestions] = useState([]);
   const [user, setUser] = useState(null);
   const [timer, setTimer] = useState(null); // total seconds
@@ -72,20 +144,23 @@ export default function Mentor() {
   const streamRef = useRef(null);
   const roleDropdownRef = useRef(null);
 
-  const filteredRoles = allRoles.filter(role =>
+  const filteredRoles = allRoles.filter((role) =>
     role.toLowerCase().includes(roleSearchTerm.toLowerCase())
   );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target)) {
+      if (
+        roleDropdownRef.current &&
+        !roleDropdownRef.current.contains(event.target)
+      ) {
         setShowRoleDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -110,8 +185,8 @@ export default function Mentor() {
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          facingMode: 'user'
-        }
+          facingMode: "user",
+        },
       });
 
       if (videoRef.current) {
@@ -120,7 +195,7 @@ export default function Mentor() {
         setIsCameraOn(true);
 
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch(err => {
+          videoRef.current.play().catch((err) => {
             console.error("Play error:", err);
           });
         };
@@ -133,7 +208,7 @@ export default function Mentor() {
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
     if (videoRef.current) {
@@ -155,7 +230,8 @@ export default function Mentor() {
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       return canvas.toDataURL("image/jpeg");
-    } return null;
+    }
+    return null;
   };
 
   const generateInterviewQuestions = async (role, level, numQuestions = 10) => {
@@ -184,9 +260,9 @@ Experience Level: ${level}`;
       console.log("Azure response:", response);
 
       const questions = response
-        .split('\n')
-        .map(q => q.trim())
-        .filter(q => q.length > 0 && q.includes('?'))
+        .split("\n")
+        .map((q) => q.trim())
+        .filter((q) => q.length > 0 && q.includes("?"))
         .slice(0, numQuestions);
 
       console.log("Parsed questions:", questions);
@@ -196,14 +272,16 @@ Experience Level: ${level}`;
       }
 
       console.log("Using fallback questions");
-      return questions.length > 0 ? questions : [
-        "Tell me about yourself and your background.",
-        "Why are you interested in this position?",
-        "What are your greatest strengths?",
-        "Describe a challenging situation you faced and how you handled it.",
-        "Where do you see yourself in 5 years?",
-        "Do you have any questions for me?"
-      ];
+      return questions.length > 0
+        ? questions
+        : [
+            "Tell me about yourself and your background.",
+            "Why are you interested in this position?",
+            "What are your greatest strengths?",
+            "Describe a challenging situation you faced and how you handled it.",
+            "Where do you see yourself in 5 years?",
+            "Do you have any questions for me?",
+          ];
     } catch (error) {
       console.error("Error generating questions:", error);
       return [
@@ -212,7 +290,7 @@ Experience Level: ${level}`;
         "What are your greatest strengths?",
         "Describe a challenging situation you faced and how you handled it.",
         "Where do you see yourself in 5 years?",
-        "Do you have any questions for me?"
+        "Do you have any questions for me?",
       ];
     }
   };
@@ -220,14 +298,18 @@ Experience Level: ${level}`;
     if (!selectedRole || !selectedLevel) return;
 
     setIsLoading(true);
-    const questions = await generateInterviewQuestions(selectedRole, selectedLevel, 10);
+    const questions = await generateInterviewQuestions(
+      selectedRole,
+      selectedLevel,
+      10
+    );
     setInterviewQuestions(questions); // Fix: Set the questions in state
 
     setIsStarted(true);
     const welcomeMessage = {
       id: Date.now().toString(),
       type: "bot",
-      content: `Hello! I'm your AI interviewer. Today we'll be conducting a ${selectedLevel} level interview for a ${selectedRole} position. I'll ask you ${questions.length} questions tailored specifically for this role. Take your time with each response. Let's begin with the first question: ${questions[0]}`,
+      content: `Hello. I’m your interviewer for a ${selectedLevel} level ${selectedRole} interview. There are ${questions.length} questions tailored to this role. Please take your time — we’ll begin with: ${questions[0]}`,
       timestamp: new Date(),
     };
     setMessages([welcomeMessage]);
@@ -235,7 +317,8 @@ Experience Level: ${level}`;
   };
 
   const handleVoiceInput = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech recognition is not supported in your browser.");
       return;
@@ -280,7 +363,8 @@ Experience Level: ${level}`;
     if (recognitionRef.current) {
       recognitionRef.current.abort();
     }
-  }; const sendMessage = async () => {
+  };
+  const sendMessage = async () => {
     if (!currentInput.trim()) return;
 
     const userMessage = {
@@ -304,41 +388,58 @@ Experience Level: ${level}`;
         const feedbackPrompt = `As an experienced interviewer, provide brief constructive feedback (2-3 sentences) on this candidate's response to the question "${interviewQuestions[currentQuestion]}": "${userMessage.content}". Please provide a clean response without any markdown formatting like ** or *.`;
 
         botResponse = await askAzureText(feedbackPrompt);
-        botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+        botResponse = botResponse
+          .replace(/\*\*(.*?)\*\*/g, "$1")
+          .replace(/\*(.*?)\*/g, "$1");
 
-        setAiFeedback((prev) => [...prev, {
-          id: Date.now().toString(),
-          questionNumber: currentQuestion + 1,
-          question: interviewQuestions[currentQuestion],
-          userAnswer: userMessage.content,
-          feedback: botResponse,
-          timestamp: new Date(),
-        }]);
+        setAiFeedback((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            questionNumber: currentQuestion + 1,
+            question: interviewQuestions[currentQuestion],
+            userAnswer: userMessage.content,
+            feedback: botResponse,
+            timestamp: new Date(),
+          },
+        ]);
 
         setCurrentQuestion((prev) => prev + 1);
+        const starter =
+          nextQuestionStarters[
+            Math.floor(Math.random() * nextQuestionStarters.length)
+          ];
 
-        nextQuestionOnly = `Next question: ${interviewQuestions[currentQuestion + 1]}`;
+        nextQuestionOnly = `${starter} ${
+          interviewQuestions[currentQuestion + 1]
+        }`;
       } else {
         const finalFeedbackPrompt = `As an experienced interviewer, provide a brief final assessment (3-4 sentences) of this candidate's overall interview performance based on their responses. Be constructive and encouraging. Please provide a clean response without any markdown formatting like ** or *.`;
 
         botResponse = await askAzureText(finalFeedbackPrompt);
-        botResponse = botResponse.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+        botResponse = botResponse
+          .replace(/\*\*(.*?)\*\*/g, "$1")
+          .replace(/\*(.*?)\*/g, "$1");
 
-        setAiFeedback((prev) => [...prev, {
-          id: Date.now().toString(),
-          questionNumber: currentQuestion + 1,
-          question: interviewQuestions[currentQuestion],
-          userAnswer: userMessage.content,
-          feedback: botResponse,
-          timestamp: new Date(),
-          isFinal: true,
-        }]);
+        setAiFeedback((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            questionNumber: currentQuestion + 1,
+            question: interviewQuestions[currentQuestion],
+            userAnswer: userMessage.content,
+            feedback: botResponse,
+            timestamp: new Date(),
+            isFinal: true,
+          },
+        ]);
 
         setIsComplete(true);
         setTimeout(() => {
           setShowResults(true);
         }, 2000);
-        nextQuestionOnly = "Thank you for completing the interview! Loading your detailed results...";
+        nextQuestionOnly =
+          "Thank you for completing the interview! Loading your detailed results...";
       }
 
       const botMessage = {
@@ -358,7 +459,9 @@ Experience Level: ${level}`;
               img
             );
 
-            const cleanImageFeedback = imageFeedback.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+            const cleanImageFeedback = imageFeedback
+              .replace(/\*\*(.*?)\*\*/g, "$1")
+              .replace(/\*(.*?)\*/g, "$1");
 
             setAiFeedback((prev) => {
               const updatedFeedback = [...prev];
@@ -366,7 +469,7 @@ Experience Level: ${level}`;
               if (lastIndex >= 0) {
                 updatedFeedback[lastIndex] = {
                   ...updatedFeedback[lastIndex],
-                  cameraFeedback: cleanImageFeedback
+                  cameraFeedback: cleanImageFeedback,
                 };
               }
               return updatedFeedback;
@@ -382,9 +485,12 @@ Experience Level: ${level}`;
 
       if (currentQuestion < interviewQuestions.length - 1) {
         setCurrentQuestion((prev) => prev + 1);
-        fallbackResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
+        fallbackResponse = `Thank you for that response. Let me ask you the next question: ${
+          interviewQuestions[currentQuestion + 1]
+        }`;
       } else {
-        fallbackResponse = "Thank you for completing the interview! That concludes our session. You've done well.";
+        fallbackResponse =
+          "Thank you for completing the interview! That concludes our session. You've done well.";
         setIsComplete(true);
       }
 
@@ -399,7 +505,8 @@ Experience Level: ${level}`;
     } finally {
       setIsLoading(false);
     }
-  }; const resetInterview = () => {
+  };
+  const resetInterview = () => {
     setIsStarted(false);
     setMessages([]);
     setCurrentQuestion(0);
@@ -461,29 +568,28 @@ Experience Level: ${level}`;
   if (!isStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-teal-50 to-slate-50">
-       <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
-  <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
-    <Link
-      to="/"
-      className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
-    >
-      <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-      <span className="font-medium">Back to Home</span>
-    </Link>
+        <header className="border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-sm relative">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+            <Link
+              to="/"
+              className="flex items-center space-x-2 text-slate-600 hover:text-purple-700 transition-colors group"
+            >
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Back to Home</span>
+            </Link>
 
-    <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-      <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-        <Brain className="w-4 h-4 text-white" />
-      </div>
-      <h1 className="text-center text-xl font-bold text-slate-900">
-        AI Interview Setup
-      </h1>
-    </div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <h1 className="text-center text-xl font-bold text-slate-900">
+                AI Interview Setup
+              </h1>
+            </div>
 
-    <div className="flex items-center gap-4">
-    </div>
-  </div>
-</header>
+            <div className="flex items-center gap-4"></div>
+          </div>
+        </header>
 
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto">
@@ -492,8 +598,12 @@ Experience Level: ${level}`;
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Target className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl text-slate-900">Setup Your AI Mock Interview</CardTitle>
-                <p className="text-slate-600">AI will generate personalized questions for your role</p>
+                <CardTitle className="text-2xl text-slate-900">
+                  Setup Your AI Mock Interview
+                </CardTitle>
+                <p className="text-slate-600">
+                  AI will generate personalized questions for your role
+                </p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 {setupStep === 1 && (
@@ -515,29 +625,30 @@ Experience Level: ${level}`;
                           placeholder="Search for a role..."
                           className="w-full h-12 px-4 border border-slate-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 bg-white text-slate-900 placeholder-slate-500"
                         />
-                        {showRoleDropdown && (roleSearchTerm || !selectedRole) && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                            {filteredRoles.length > 0 ? (
-                              filteredRoles.map((role, index) => (
-                                <div
-                                  key={index}
-                                  onClick={() => {
-                                    setSelectedRole(role);
-                                    setRoleSearchTerm("");
-                                    setShowRoleDropdown(false);
-                                  }}
-                                  className="px-4 py-3 hover:bg-purple-50 cursor-pointer text-slate-900 border-b border-slate-100 last:border-b-0"
-                                >
-                                  {role}
+                        {showRoleDropdown &&
+                          (roleSearchTerm || !selectedRole) && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              {filteredRoles.length > 0 ? (
+                                filteredRoles.map((role, index) => (
+                                  <div
+                                    key={index}
+                                    onClick={() => {
+                                      setSelectedRole(role);
+                                      setRoleSearchTerm("");
+                                      setShowRoleDropdown(false);
+                                    }}
+                                    className="px-4 py-3 hover:bg-purple-50 cursor-pointer text-slate-900 border-b border-slate-100 last:border-b-0"
+                                  >
+                                    {role}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="px-4 py-3 text-slate-500 italic">
+                                  No roles found matching "{roleSearchTerm}"
                                 </div>
-                              ))
-                            ) : (
-                              <div className="px-4 py-3 text-slate-500 italic">
-                                No roles found matching "{roleSearchTerm}"
-                              </div>
-                            )}
-                          </div>
-                        )}
+                              )}
+                            </div>
+                          )}
                         {selectedRole && (
                           <div className="mt-2 flex items-center space-x-2">
                             <div className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
@@ -557,28 +668,45 @@ Experience Level: ${level}`;
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-3 ">Experience Level</label>
-                      <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                      <label className="block text-sm font-medium text-slate-900 mb-3 ">
+                        Experience Level
+                      </label>
+                      <Select
+                        value={selectedLevel}
+                        onValueChange={setSelectedLevel}
+                      >
                         <SelectTrigger className="border-slate-300 focus:border-purple-500 focus:ring-purple-500/20 h-12">
                           <SelectValue placeholder="Select your level" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Entry">Entry Level (0-2 years)</SelectItem>
-                          <SelectItem value="Mid">Mid Level (3-5 years)</SelectItem>
-                          <SelectItem value="Senior">Senior Level (6+ years)</SelectItem>
-                          <SelectItem value="Executive">Executive Level</SelectItem>
+                          <SelectItem value="Entry">
+                            Entry Level (0-2 years)
+                          </SelectItem>
+                          <SelectItem value="Mid">
+                            Mid Level (3-5 years)
+                          </SelectItem>
+                          <SelectItem value="Senior">
+                            Senior Level (6+ years)
+                          </SelectItem>
+                          <SelectItem value="Executive">
+                            Executive Level
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="bg-gradient-to-r from-purple-50 to-teal-50 p-6 rounded-xl border border-purple-100">
                       <div className="flex items-center space-x-2 mb-3">
                         <Zap className="w-5 h-5 text-purple-600" />
-                        <h3 className="font-semibold text-slate-900">AI-Powered Features:</h3>
+                        <h3 className="font-semibold text-slate-900">
+                          AI-Powered Features:
+                        </h3>
                       </div>
                       <ul className="text-sm text-slate-700 space-y-2">
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                          <span>AI-generated questions tailored to your role & level</span>
+                          <span>
+                            AI-generated questions tailored to your role & level
+                          </span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
@@ -586,11 +714,15 @@ Experience Level: ${level}`;
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                          <span>Voice input support for natural conversation</span>
+                          <span>
+                            Voice input support for natural conversation
+                          </span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                          <span>Body language & posture analysis via webcam</span>
+                          <span>
+                            Body language & posture analysis via webcam
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -616,14 +748,26 @@ Experience Level: ${level}`;
                       </CardHeader>
                       <CardContent className="p-6">
                         <ul className="mt-4 text-sm text-slate-700 space-y-3 list-disc pl-5">
-                          <li>Ensure you are in a well-lit environment for clear video analysis.</li>
-                          <li>Maintain a good posture: sit upright and face the camera directly.</li>
-                          <li>Dress appropriately as you would for a real interview.</li>
+                          <li>
+                            Ensure you are in a well-lit environment for clear
+                            video analysis.
+                          </li>
+                          <li>
+                            Maintain a good posture: sit upright and face the
+                            camera directly.
+                          </li>
+                          <li>
+                            Dress appropriately as you would for a real
+                            interview.
+                          </li>
                           <li>Minimize background noise and distractions.</li>
                           <li>Be prepared with a notepad and pen if needed.</li>
                           <li>Keep your mobile phone on silent mode.</li>
                           <li>Be honest and authentic in your responses.</li>
-                          <li>By starting, you agree to these terms and to being recorded for feedback purposes.</li>
+                          <li>
+                            By starting, you agree to these terms and to being
+                            recorded for feedback purposes.
+                          </li>
                         </ul>
                       </CardContent>
                     </Card>
@@ -677,14 +821,23 @@ Experience Level: ${level}`;
               Reset
             </Button>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50">
+              <Badge
+                variant="outline"
+                className="border-purple-300 text-purple-700 bg-purple-50"
+              >
                 {selectedRole}
               </Badge>
-              <Badge variant="outline" className="border-teal-300 text-teal-700 bg-teal-50">
+              <Badge
+                variant="outline"
+                className="border-teal-300 text-teal-700 bg-teal-50"
+              >
                 {selectedLevel}
               </Badge>
               {isCameraOn && (
-                <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50">
+                <Badge
+                  variant="outline"
+                  className="border-green-300 text-green-700 bg-green-50"
+                >
                   <Video className="w-3 h-3 mr-1" />
                   Camera Active
                 </Badge>
@@ -697,7 +850,8 @@ Experience Level: ${level}`;
                 type="button"
                 className="flex items-center gap-2 px-5 py-2 rounded-full font-bold text-lg shadow-lg border-2 border-white focus:outline-none"
                 style={{
-                  background: "linear-gradient(135deg, #8b5cf6 0%, #14b8a6 100%)", // purple to teal
+                  background:
+                    "linear-gradient(135deg, #8b5cf6 0%, #14b8a6 100%)", // purple to teal
                   color: "#fff",
                   boxShadow: "0 0 16px #8b5cf6, 0 0 32px #14b8a6",
                   transition: "box-shadow 0.3s",
@@ -706,7 +860,9 @@ Experience Level: ${level}`;
                 aria-label="Interview Timer"
               >
                 <Clock className="w-6 h-6 text-white drop-shadow" />
-                <span className="tracking-widest">{formatTime(timeLeft ?? 0)}</span>
+                <span className="tracking-widest">
+                  {formatTime(timeLeft ?? 0)}
+                </span>
               </button>
             )}
             {!user && (
@@ -732,7 +888,8 @@ Experience Level: ${level}`;
                   <Camera className="w-5 h-5 text-blue-600" />
                   <span>Video Feed</span>
                 </CardTitle>
-              </CardHeader>              <CardContent className="p-4">
+              </CardHeader>{" "}
+              <CardContent className="p-4">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -748,10 +905,11 @@ Experience Level: ${level}`;
                     variant="outline"
                     size="sm"
                     onClick={isCameraOn ? stopCamera : startCamera}
-                    className={`transition-all duration-300 ${isCameraOn
+                    className={`transition-all duration-300 ${
+                      isCameraOn
                         ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100"
                         : "border-slate-300 text-slate-600 hover:bg-slate-50"
-                      }`}
+                    }`}
                   >
                     {isCameraOn ? (
                       <>
@@ -771,25 +929,43 @@ Experience Level: ${level}`;
           </div>
 
           <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
+            <Card className="h-[600px] flex flex-col border-slate-200 shadow-xl bg-white/80 backdrop-blur-sm">
+              {" "}
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-teal-50 border-b border-slate-200">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-600 rounded-lg flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                  <CardTitle className="text-lg text-slate-900">
+                    AI Interview Session
+                  </CardTitle>
                 </div>
-                <CardTitle className="text-lg text-slate-900">AI Interview Session</CardTitle>
-              </div>
-            </CardHeader>
+              </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 mt-4">
                 {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    key={message.id}
+                    className={`flex ${
+                      message.type === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
                     <div
-                      className={`max-w-[80%] p-4 rounded-2xl shadow-sm ${message.type === "user"
+                      className={`max-w-[80%] p-4 rounded-2xl shadow-sm ${
+                        message.type === "user"
                           ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white"
                           : "bg-white border border-slate-200 text-slate-900"
-                        }`}
+                      }`}
                     >
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                      <p className={`text-xs mt-2 ${message.type === "user" ? "text-purple-200" : "text-slate-500"}`}>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {message.content}
+                      </p>
+                      <p
+                        className={`text-xs mt-2 ${
+                          message.type === "user"
+                            ? "text-purple-200"
+                            : "text-slate-500"
+                        }`}
+                      >
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
@@ -800,18 +976,23 @@ Experience Level: ${level}`;
                     <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                       <div className="flex items-center space-x-2">
                         <Brain className="w-4 h-4 text-purple-600 animate-pulse" />
-                        <span className="text-sm text-slate-600">AI is thinking...</span>
+                        <span className="text-sm text-slate-600">
+                          AI is thinking...
+                        </span>
                       </div>
                     </div>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
-              </CardContent>              {!isComplete && (
+              </CardContent>{" "}
+              {!isComplete && (
                 <div className="p-4 border-t border-slate-200 bg-slate-50/50">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-sm text-slate-600">
-                      Question {currentQuestion + 1} of {interviewQuestions.length}
-                    </div>                    <Button
+                      Question {currentQuestion + 1} of{" "}
+                      {interviewQuestions.length}
+                    </div>{" "}
+                    <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
@@ -821,7 +1002,8 @@ Experience Level: ${level}`;
                       className="text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-300"
                     >
                       Finish Interview
-                    </Button>                  </div>
+                    </Button>{" "}
+                  </div>
                   <div className="flex space-x-3">
                     <Textarea
                       value={currentInput}
@@ -882,17 +1064,22 @@ Experience Level: ${level}`;
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 mt-4">
-                <div className="space-y-4">                  <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Questions Completed</span>
-                  <span className="text-slate-900 font-semibold">
-                    {userResponses.length} / {interviewQuestions.length}
-                  </span>
-                </div>
+                <div className="space-y-4">
+                  {" "}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Questions Completed</span>
+                    <span className="text-slate-900 font-semibold">
+                      {userResponses.length} / {interviewQuestions.length}
+                    </span>
+                  </div>
                   <div className="w-full bg-slate-200 rounded-full h-3">
                     <div
                       className="bg-gradient-to-r from-teal-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
                       style={{
-                        width: `${(userResponses.length / interviewQuestions.length) * 100}%`,
+                        width: `${
+                          (userResponses.length / interviewQuestions.length) *
+                          100
+                        }%`,
                       }}
                     />
                   </div>
@@ -915,7 +1102,9 @@ Experience Level: ${level}`;
                   </li>
                   <li className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-teal-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Use the STAR method (Situation, Task, Action, Result)</span>
+                    <span>
+                      Use the STAR method (Situation, Task, Action, Result)
+                    </span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
@@ -925,8 +1114,8 @@ Experience Level: ${level}`;
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></div>
                     <span>Maintain eye contact and confident body posture</span>
                   </li>
-                  </ul>    
-                  </CardContent>
+                </ul>
+              </CardContent>
             </Card>
           </div>
         </div>

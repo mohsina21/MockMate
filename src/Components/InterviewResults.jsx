@@ -61,7 +61,8 @@ export default function InterviewResults({
         7. Final recommendation and next steps
 
         Keep the summary professional, constructive, and encouraging. Focus on actionable insights that will help the candidate improve their interview skills. Limit to 300-400 words. Please provide a clean response without any markdown formatting like ** or * or # signs.
-        `;        const summary = await askAzureText(summaryPrompt);
+        `;       
+         const summary = await askAzureText(summaryPrompt);
         const cleanSummary = summary
           .replace(/\*\*(.*?)\*\*/g, '$1')
           .replace(/\*(.*?)\*/g, '$1')

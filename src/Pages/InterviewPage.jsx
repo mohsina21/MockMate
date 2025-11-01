@@ -52,7 +52,8 @@ const formatTime = (seconds) => {
     const welcomeMessage = {
       id: Date.now().toString(),
       type: "bot",
-      content: `Hello! I'm your AI interviewer. Today we'll be conducting a ${selectedLevel} level interview for a ${selectedRole} position. I'll ask you ${interviewQuestions.length} questions. Take your time with each response. Let's begin with the first question: ${interviewQuestions[0]}`,
+      content: `Hello — I'm your AI interviewer. Today we'll run a ${selectedLevel} level interview for the ${selectedRole} role. There are ${interviewQuestions.length} questions. Please take your time with each answer. Let's begin with question 1: ${interviewQuestions[0]}`,
+
       timestamp: new Date(),
     };
     setMessages([welcomeMessage]);
@@ -82,12 +83,14 @@ timerRef.current = setInterval(() => {
       let botResponse = "";
 
       if (currentQuestion < interviewQuestions.length - 1) {
-        botResponse = `Thank you for that response. Let me ask you the next question: ${interviewQuestions[currentQuestion + 1]}`;
+        botResponse = `Thanks for the answer! Let's move on to the next question: ${interviewQuestions[currentQuestion + 1]}`
+
         setCurrentQuestion((prev) => prev + 1);
       } else {
         botResponse =
-          "Thank you for completing the interview! That concludes our session. You'll receive detailed feedback shortly.";
-        setIsComplete(true);
+  "Thank you for cowmpleting the interview. The session is no concluded. Your feedback will be provided shortly.";
+setIsComplete(true);
+
       }
 
       const botMessage = {

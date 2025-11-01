@@ -12,7 +12,7 @@ function App() {
     <div className="relative w-full h-full min-h-screen overflow-x-hidden bg-white">
       {/* Squares always in the background */}
       
-   
+
       <Router>
            <ScrollToTop />
         <Routes>
